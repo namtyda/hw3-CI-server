@@ -1,9 +1,9 @@
 const axios = require('axios');
 const https = require('https');
-const { spawn } = require('child_process');
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false
 });
+const { gitClone } = require('./git');
 
 const inst = axios.create({
   baseURL: 'https://hw.shri.yandex/api',
@@ -35,7 +35,7 @@ module.exports.getSettings = async (_, res) => {
   });
 }
 
-// Получаю список массив со списком билдов
+// Получаю массив со списком билдов
 module.exports.getBuilds = async (req, res) => {
   const { params } = req;
   let responseBuilds;
@@ -142,7 +142,7 @@ module.exports.postAddInstQueue = async (req, res) => {
 
 // Сохранение настроек
 module.exports.postSettings = async (req, res) => {
-  const git = spawn("git", ["clone", "https://github.com/necolas/normalize.css.git"]).stdout.pipe(process.stdout);
+  gitClone();
   const { body } = req;
   let responseSettings;
   try {
