@@ -7,7 +7,7 @@ const httpsAgent = new https.Agent({
 
 const inst = axios.create({
   baseURL: 'https://hw.shri.yandex/api',
-  timeout: 1000,
+  timeout: 3000,
   headers: { 'Authorization': `Bearer ${process.env.APIKEY}` },
   httpsAgent
 });
@@ -23,7 +23,7 @@ module.exports.getSettings = async (_, res) => {
   const { data, status } = responseGetSettings;
 
   if (status !== 200) {
-    return res.status(401).send('bad request');
+    return res.status(500).send('bad request');
   }
 
   res.send({
@@ -58,7 +58,7 @@ module.exports.getBuilds = async (req, res) => {
   res.send(data.data);
 }
 
-// Получаю инфу о билде по buildID 
+// Получаю инфу о билде по buildId 
 module.exports.getBuildId = async (req, res) => {
   const { params } = req;
   const { buildId } = params;
@@ -85,8 +85,32 @@ module.exports.getBuildId = async (req, res) => {
   res.send(data.data);
 }
 
-module.exports.getLogs = (req, res) => {
-  res.send(`get logs`)
+// Получение логов билда по buildId
+module.exports.getLogs = async (req, res) => {
+  const { params } = req;
+  const { buildId } = params;
+
+  if (buildId === undefined) {
+    return res.status(400).send('buildId is not defined');
+  }
+  let responseLogs;
+
+  try {
+    responseLogs = await inst.get('/build/log', {
+      params: {
+        buildId
+      }
+    });
+
+  } catch (err) {
+    return res.status(500).send('server error');
+  }
+  const { data, status } = responseLogs;
+
+  if (status !== 200) {
+    return res.status(500).send('bad server');
+  }
+  res.send(data)
 }
 
 // Добавление в очередь 
@@ -134,6 +158,6 @@ module.exports.postSettings = async (req, res) => {
   }
   const { status } = responseSettings;
   if (status !== 200) {
-    return res.status(401).send('bad request or server down');
+    return res.status(500).send('bad request or server down');
   }
 }
