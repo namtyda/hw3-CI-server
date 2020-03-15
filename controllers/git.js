@@ -120,10 +120,10 @@ async function compareCommit(buildList, commitInfo, branchName) {
     let responseQueue;
     try {
       responseQueue = await axios.post('/build/request', {
-        commitMessage: commitMessage,
-        commitHash: commitHash,
-        branchName: branchName,
-        authorName: authorName
+        commitMessage,
+        commitHash,
+        branchName,
+        authorName
       });
 
     } catch (err) {
@@ -137,31 +137,20 @@ async function compareCommit(buildList, commitInfo, branchName) {
       }
       console.log(`Добавили в очередь, со статусом ${status}`);
     }
-  } else {
-    let response;
-    if (commitInfo.length > 0) {
-      commitInfo.forEach(async ({ commitMessage, commitHash, authorName }) => {
-        try {
-          response = await axios.post('/build/request', {
-            commitMessage: commitMessage,
-            commitHash: commitHash,
-            branchName: branchName,
-            authorName: authorName
-          });
+  } else if (commitInfo.length > 0) {
+    const promiseAll = [];
+    commitInfo.forEach(({ commitMessage, commitHash, authorName }) => {
+      promiseAll.push(axios.post('/build/request', {
+        commitMessage,
+        commitHash,
+        branchName,
+        authorName
+      }));
 
-        } catch (err) {
-          console.log(`Сервер овтетил ошибкой, на добавление в очередь ${err}`);
-        }
-
-        if (response) {
-          const { status } = response;
-          if (status !== 200) {
-            return console.log(`Добавление в очередь упало со статусом ${status}`);
-          }
-          console.log(`Добавили в очередь, со статусом ${status}`);
-        }
-      });
-    }
+      Promise.all(promiseAll)
+        .then(res => console.log('Добавление задачи успешно'))
+        .catch(err => console.log('Ошибка при добавлении задача', err));
+    });
   }
 }
 module.exports = { gitClone, getCommitInfo, compareCommit, getBuildList, stopWatcher, watcher }

@@ -1,8 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
-
 
 const router = require('./routers/router');
 const app = express();
@@ -26,7 +24,6 @@ app.use((req, res) => {
   res.type("txt").send("Not found");
 }
 );
-
 
 
 app.listen(3000, err => {
