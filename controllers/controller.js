@@ -90,7 +90,8 @@ module.exports.getLogs = async (req, res) => {
     responseLogs = await axios.get('/build/log', {
       params: {
         buildId
-      }
+      },
+      responseType: 'stream'
     });
 
   } catch (err) {
@@ -158,7 +159,11 @@ module.exports.postSettings = async (req, res) => {
   stopWatcher();
   const buildList = await getBuildList();
   await gitClone(store.userName, store.repoName);
-  const list = await getCommitInfo(store.repoName);
+
+  store.lastHashCommit = buildList.length > 0 ? buildList[0].commitHash : [];
+  console.log(store.lastHashCommit, 'в контролле хэш')
+
+  const list = await getCommitInfo(store.repoName, store.lastHashCommit, store.mainBranch);
 
   await compareCommit(buildList, list, store.mainBranch);
   console.log(store.repoName, 'repo')
