@@ -136,6 +136,7 @@ module.exports.postAddInstQueue = async (req, res) => {
 // Сохранение настроек
 module.exports.postSettings = async (req, res) => {
   const { body } = req;
+
   [store.userName, store.repoName] = body.repoName.split('/');
   store.buildCommand = body.buildCommand;
   store.mainBranch = body.mainBranch;
@@ -157,15 +158,10 @@ module.exports.postSettings = async (req, res) => {
     return res.status(500).send('bad request or server down');
   }
   stopWatcher();
-  const buildList = await getBuildList();
   await gitClone(store.userName, store.repoName);
+  const list = await getCommitInfo(store.repoName, store.mainBranch);
 
-  store.lastHashCommit = buildList.length > 0 ? buildList[0].commitHash : [];
-  console.log(store.lastHashCommit, 'в контролле хэш')
-
-  const list = await getCommitInfo(store.repoName, store.lastHashCommit, store.mainBranch);
-
-  await compareCommit(buildList, list, store.mainBranch);
+  await compareCommit(list, store.mainBranch, true);
   console.log(store.repoName, 'repo')
   watcher(store.period, store.repoName, store.userName, store.mainBranch);
   res.status(200).send('ok');

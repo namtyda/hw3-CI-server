@@ -4,7 +4,7 @@ const fs = require('fs');
 const { fileExistsAsync } = require('../utils/promisified');
 const axios = require('../utils/axios-inst');
 const store = {
-
+  lastCommitHash: ''
 };
 
 async function gitClone(userName, repoName) {
@@ -39,10 +39,10 @@ async function gitPull(userName, repoName) {
     });
   }
 }
-async function getCommitInfo(repoName, lastCommitHash, branchName) {
+async function getCommitInfo(repoName, branchName) {
   if (await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
-    console.log(lastCommitHash, 'this is fucking hash')
-    let hashLast = lastCommitHash.length > 0 ? lastCommitHash + '...HEAD' : '--no-decorate';
+    
+    let hashLast = store.lastCommitHash.length > 0 ? store.lastCommitHash + '...HEAD' : '--no-decorate';
     let buff = Buffer.alloc(0);
     let result;
     return new Promise((resolve, rej) => {
@@ -62,6 +62,8 @@ async function getCommitInfo(repoName, lastCommitHash, branchName) {
         const str = buff.toString();
         if (str) {
           result = str.split('\n').map((el, i) => JSON.parse(el));
+          store.lastCommitHash = result[0].commitHash;
+          console.log(result)
           resolve(result);
         }
         resolve([]);
@@ -72,15 +74,15 @@ async function getCommitInfo(repoName, lastCommitHash, branchName) {
 
 function watcher(interval, repoName, userName, branchName) {
   store.fsWatch = fs.watchFile(path.resolve(__dirname, '../', repoName), file => {
-    console.log(repoName, 'rep0jae')
+    console.log(repoName, '<=== in this repo, files changed');
   });
   store.intervalWatchId = setInterval(async () => {
     console.log('lol interval');
-
+    console.log(process.memoryUsage());
     await gitPull(userName, repoName);
-    const buildList = await getBuildList();
-    const logCommit = await getCommitInfo(repoName, buildList[0].commitHash, branchName);
-    compareCommit(buildList, logCommit, branchName);
+
+    const logCommit = await getCommitInfo(repoName, branchName);
+    compareCommit(logCommit, branchName);
   }, interval);
 }
 
@@ -113,9 +115,9 @@ async function getBuildList() {
   return data.data;
 }
 
-async function compareCommit(buildList, commitInfo, branchName) {
+async function compareCommit(commitInfo, branchName, isFirst = false) {
   console.log(branchName, 'branchchch')
-  if (buildList.length === 0) {
+  if (isFirst) {
     const { commitMessage, commitHash, authorName } = commitInfo[0];
     let responseQueue;
     try {
@@ -129,7 +131,6 @@ async function compareCommit(buildList, commitInfo, branchName) {
     } catch (err) {
       console.log(`Сервер овтетил ошибкой, на добавление в очередь ${err}`);
     }
-
     if (responseQueue) {
       const { status } = responseQueue;
       if (status !== 200) {
@@ -137,17 +138,18 @@ async function compareCommit(buildList, commitInfo, branchName) {
       }
       console.log(`Добавили в очередь, со статусом ${status}`);
     }
-  } else if (commitInfo.length > 0) {
+    
+  } else if (!isFirst && commitInfo.length > 0) {
     const promiseAll = [];
-    commitInfo.forEach(({ commitMessage, commitHash, authorName }) => {
-      promiseAll.push(axios.post('/build/request', {
+    commitInfo.forEach( async ({ commitMessage, commitHash, authorName }) => {
+      promiseAll.push(await axios.post('/build/request', {
         commitMessage,
         commitHash,
         branchName,
         authorName
       }));
 
-      Promise.all(promiseAll)
+      Promise.allSettled(promiseAll)
         .then(res => console.log('Добавление задачи успешно'))
         .catch(err => console.log('Ошибка при добавлении задача', err));
     });
