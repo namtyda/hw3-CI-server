@@ -1,22 +1,13 @@
-const axios = require('axios');
-const https = require('https');
-const httpsAgent = new https.Agent({
-  rejectUnauthorized: false
-});
-const { gitClone } = require('./git');
+const { gitClone, compareCommit, getBuildList, getCommitInfo, stopWatcher, watcher } = require('./git');
+const axios = require('../utils/axios-inst');
 
-const inst = axios.create({
-  baseURL: 'https://hw.shri.yandex/api',
-  timeout: 3000,
-  headers: { 'Authorization': `Bearer ${process.env.APIKEY}` },
-  httpsAgent
-});
+const store = {}
 
 // Получаю настройки
 module.exports.getSettings = async (_, res) => {
   let responseGetSettings;
   try {
-    responseGetSettings = await inst.get('/conf');
+    responseGetSettings = await axios.get('/conf');
   } catch (err) {
     res.status(500).send(err);
   }
@@ -41,7 +32,7 @@ module.exports.getBuilds = async (req, res) => {
   let responseBuilds;
 
   try {
-    responseBuilds = await inst.get('/build/list', {
+    responseBuilds = await axios.get('/build/list', {
       params: {
         offset: params.offset || 0,
         limit: params.limit || 25
@@ -68,7 +59,7 @@ module.exports.getBuildId = async (req, res) => {
   }
   let responseBuildId;
   try {
-    responseBuildId = await inst.get('/build/details', {
+    responseBuildId = await axios.get('/build/details', {
       params: {
         buildId
       }
@@ -96,7 +87,7 @@ module.exports.getLogs = async (req, res) => {
   let responseLogs;
 
   try {
-    responseLogs = await inst.get('/build/log', {
+    responseLogs = await axios.get('/build/log', {
       params: {
         buildId
       }
@@ -123,7 +114,7 @@ module.exports.postAddInstQueue = async (req, res) => {
   }
   let responseQueue;
   try {
-    responseQueue = await inst.post('/build/request', {
+    responseQueue = await axios.post('/build/request', {
       commitMessage: body.commitMessage,
       commitHash,
       branchName: body.branchName,
@@ -138,15 +129,19 @@ module.exports.postAddInstQueue = async (req, res) => {
   if (status !== 200) {
     return res.status(500).send('cant add build to queue');
   }
+  res.status(200).send('ok');
 }
 
 // Сохранение настроек
 module.exports.postSettings = async (req, res) => {
-  gitClone();
   const { body } = req;
+  [store.userName, store.repoName] = body.repoName.split('/');
+  store.buildCommand = body.buildCommand;
+  store.mainBranch = body.mainBranch;
+  store.period = body.period;
   let responseSettings;
   try {
-    responseSettings = await inst.post('/conf', {
+    responseSettings = await axios.post('/conf', {
       repoName: body.repoName,
       buildCommand: body.buildCommand,
       mainBranch: body.mainBranch,
@@ -160,4 +155,13 @@ module.exports.postSettings = async (req, res) => {
   if (status !== 200) {
     return res.status(500).send('bad request or server down');
   }
+  stopWatcher();
+  const buildList = await getBuildList();
+  await gitClone(store.userName, store.repoName);
+  const list = await getCommitInfo(store.repoName);
+
+  await compareCommit(buildList, list, store.mainBranch);
+  console.log(store.repoName, 'repo')
+  watcher(store.period, store.repoName, store.userName, store.mainBranch);
+  res.status(200).send('ok');
 }
