@@ -16,7 +16,7 @@ async function gitClone(userName, repoName) {
       });
 
       git.on('close', async code => {
-        console.log(`Это код завершения процесса клона репы, спавна ${code}`);
+        console.log(`Это код завершения процесса клона репы ${code}`);
         if (code === 0) {
           res()
         }
@@ -41,7 +41,7 @@ async function gitPull(userName, repoName) {
 }
 async function getCommitInfo(repoName, branchName) {
   if (await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
-    
+
     let hashLast = store.lastCommitHash.length > 0 ? store.lastCommitHash + '...HEAD' : '--no-decorate';
     let buff = Buffer.alloc(0);
     let result;
@@ -63,7 +63,6 @@ async function getCommitInfo(repoName, branchName) {
         if (str) {
           result = str.split('\n').map((el, i) => JSON.parse(el));
           store.lastCommitHash = result[0].commitHash;
-          console.log(result)
           resolve(result);
         }
         resolve([]);
@@ -77,10 +76,13 @@ function watcher(interval, repoName, userName, branchName) {
     console.log(repoName, '<=== in this repo, files changed');
   });
   store.intervalWatchId = setInterval(async () => {
-    console.log('lol interval');
-    console.log(process.memoryUsage());
-    await gitPull(userName, repoName);
-
+    console.log('lol interval', interval);
+    if (await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
+      await gitPull(userName, repoName);
+      const logCommit = await getCommitInfo(repoName, branchName);
+      return compareCommit(logCommit, branchName);
+    }
+    gitClone(userName, repoName);
     const logCommit = await getCommitInfo(repoName, branchName);
     compareCommit(logCommit, branchName);
   }, interval);
@@ -115,8 +117,7 @@ async function getBuildList() {
   return data.data;
 }
 
-async function compareCommit(commitInfo, branchName, isFirst = false) {
-  console.log(branchName, 'branchchch')
+async function compareCommit(commitInfo = [], branchName, isFirst = false) {
   if (isFirst) {
     const { commitMessage, commitHash, authorName } = commitInfo[0];
     let responseQueue;
@@ -138,17 +139,17 @@ async function compareCommit(commitInfo, branchName, isFirst = false) {
       }
       console.log(`Добавили в очередь, со статусом ${status}`);
     }
-    
+
   } else if (!isFirst && commitInfo.length > 0) {
     const promiseAll = [];
-    commitInfo.forEach( async ({ commitMessage, commitHash, authorName }) => {
+    commitInfo.forEach(async ({ commitMessage, commitHash, authorName }) => {
       promiseAll.push(await axios.post('/build/request', {
         commitMessage,
         commitHash,
         branchName,
         authorName
       }));
-
+      // Почему то если посылать несколько запросов, некоторые падают с 500. Мб стоит ограничение по времени в хранилище.
       Promise.allSettled(promiseAll)
         .then(res => console.log('Добавление задачи успешно'))
         .catch(err => console.log('Ошибка при добавлении задача', err));
@@ -156,11 +157,3 @@ async function compareCommit(commitInfo, branchName, isFirst = false) {
   }
 }
 module.exports = { gitClone, getCommitInfo, compareCommit, getBuildList, stopWatcher, watcher }
-
-// const log = fs.createWriteStream('../log/log.txt', {flags: 'a'});
-// const err = fs.createWriteStream('../log/logErr.txt', {flagscheckCommit: 'a'});
-// const ss = spawan(...).stdio: [process.stdin, log, err]
-
-// ss.stdout.pipe(logStream)
-
-//git log -2 --pretty=format:'%H % cn %s'

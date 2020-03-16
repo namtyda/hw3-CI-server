@@ -1,4 +1,5 @@
-const { gitClone, compareCommit, getBuildList, getCommitInfo, stopWatcher, watcher } = require('./git');
+const { gitClone, compareCommit, getCommitInfo, stopWatcher, watcher } = require('./git');
+const { writeLog, readLog, checkLog } = require('./cashLog');
 const axios = require('../utils/axios-inst');
 
 const store = {}
@@ -84,9 +85,15 @@ module.exports.getLogs = async (req, res) => {
   if (buildId === undefined) {
     return res.status(400).send('buildId is not defined');
   }
+
   let responseLogs;
 
   try {
+    if (await checkLog(buildId)) {
+      console.log('cache exist')
+      return await readLog(buildId, res);
+    }
+    console.log('Запрос логов');
     responseLogs = await axios.get('/build/log', {
       params: {
         buildId
@@ -94,15 +101,13 @@ module.exports.getLogs = async (req, res) => {
       responseType: 'stream'
     });
 
+    const {data} = responseLogs;
+    await writeLog(buildId, data);
+    await readLog(buildId, res);
+
   } catch (err) {
     return res.status(500).send('server error');
   }
-  const { data, status } = responseLogs;
-
-  if (status !== 200) {
-    return res.status(500).send('bad server');
-  }
-  res.send(data)
 }
 
 // Добавление в очередь 
@@ -162,7 +167,6 @@ module.exports.postSettings = async (req, res) => {
   const list = await getCommitInfo(store.repoName, store.mainBranch);
 
   await compareCommit(list, store.mainBranch, true);
-  console.log(store.repoName, 'repo')
   watcher(store.period, store.repoName, store.userName, store.mainBranch);
   res.status(200).send('ok');
 }
