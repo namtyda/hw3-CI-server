@@ -1,5 +1,12 @@
 @import './fonts.scss';
+@import './constants.scss';
+
+.content {
+  margin: 0 auto;
+  max-width: $max-width-content;
+  padding: 0 $space-m;
+}
+
 body {
-  font-family: "YS Text";
   margin: 0;
 }

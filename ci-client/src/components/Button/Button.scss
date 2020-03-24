@@ -50,4 +50,9 @@
     0 0 0 2px $accent-focus-button-color;
     }
   }
+  &__header {
+    padding: 0;
+    display: flex;
+    line-height: $line-height-xxl;
+  }
 }

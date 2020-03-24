@@ -1,6 +1,7 @@
 import React from 'react';
-import './App.scss';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import './App.scss';
+import { Start } from '../Start/Start';
 // import { Button } from '../Button/Button';
 // import { Input } from '../Input/Input';
 
@@ -9,7 +10,7 @@ function App() {
     <Router>
       <div className="App">
         <Switch>
-          
+          <Route path='/' exact component={Start} />
         </Switch>
       </div>
     </Router>
