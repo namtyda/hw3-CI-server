@@ -50,9 +50,18 @@
     0 0 0 2px $accent-focus-button-color;
     }
   }
+
   &__header {
     padding: 0;
     display: flex;
     line-height: $line-height-xxl;
+  }
+
+  &__settings {
+    margin-right: $space-xxxs;
+    @media screen and (max-width: 420px) {
+      margin-right: 0;
+      margin-bottom: $space-xxxs;
+    }
   }
 }
