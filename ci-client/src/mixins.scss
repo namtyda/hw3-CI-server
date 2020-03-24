@@ -1,0 +1,17 @@
+@mixin text-button {
+  font-style: normal;
+  font-weight: normal;
+  font-size: $font-size-l;
+  color: $primary-text-color;
+  font-family: 'YS text';
+  cursor: pointer;
+}
+
+
+@mixin secondary-text-style {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 16px;
+
+}
