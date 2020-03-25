@@ -8,7 +8,7 @@ export function Start() {
   return (
     <>
     <div className='start'>
-      <Header button/>
+      <Header button title='School CI server'/>
       <div className='settings-info content'>
         <img className="settings-info__img" src="images/settingslogo.svg" alt="key and screw" />
         <p className="settings-info__text">

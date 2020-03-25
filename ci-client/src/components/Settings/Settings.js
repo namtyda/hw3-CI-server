@@ -9,7 +9,7 @@ export function Settings() {
   return (
     <>
       <div className='settings'>
-        <Header settings />
+        <Header settings title='School CI server' />
         <div className='content'>
           <h2 className="settings__title">Settings</h2>
           <p className="settings__subtitle">Configure repository connection and synchronization settings.</p>
