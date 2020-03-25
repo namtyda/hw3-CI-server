@@ -6,11 +6,11 @@ export function Footer() {
   return (
     <footer className='footer'>
       <div className='content footer__content'>
-        <ul class="footer__link-list">
-          <li class="footer__link">Support</li>
-          <li class="footer__link">Learning</li>
+        <ul className="footer__link-list">
+          <li className="footer__link">Support</li>
+          <li className="footer__link">Learning</li>
         </ul>
-        <p class="footer__copyright">&copy; 2020 Andrey Pogorelov</p>
+        <p className="footer__copyright">&copy; 2020 Andrey Pogorelov</p>
       </div>
     </footer>
   );

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import './Header.scss';
 import { Button } from '../Button/Button';
 
-export function Header({ settings, button, history, title}) {
+export function Header({ settings, button, history, title, details, onClick}) {
   const headerClass = classNames( {
     'header_settings': settings,
     'header__content': !settings,
@@ -18,10 +18,10 @@ export function Header({ settings, button, history, title}) {
         <h1 className={headerTitleClass}>{title}</h1>
           {history ? 
         <div className='header__button-wrapper'>
-          <Button src='images/play.svg' textWithIcon='Run build' header />
-          <Button src='images/gear.svg' header history /> 
+           {details ?  <Button src='/images/rebuild.svg' textWithIcon='Rebuild' header /> :<Button  onClick={onClick} src='/images/play.svg' textWithIcon='Run build' header />}
+          <Button src='/images/gear.svg' header history /> 
         </div>
-          : button && <Button src='images/gear.svg' textWithIcon='Settings' header />}
+          : button && <Button src='/images/gear.svg' textWithIcon='Settings' header />}
       </header>
    
   );

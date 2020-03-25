@@ -10,7 +10,7 @@ export function Input({ labelText, name, require }) {
 
   return (
     <>
-      <label class={paragraph} for={name}>{labelText}</label>
+      <label className={paragraph} for={name}>{labelText}</label>
       <div className="input">
         <input className="input__field" id={name} type="text" placeholder={name} />
         <button className="input__field-cancel" />

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import './Button.scss';
 
-export function Button({ src, text, textWithIcon, header, accent, settings, history}) {
+export function Button({ src, text, textWithIcon, header, accent, settings, history, disabled, onClick }) {
 
   const buttonClass = classNames({
     'button__header': header,
@@ -11,9 +11,9 @@ export function Button({ src, text, textWithIcon, header, accent, settings, hist
     'header__button_history': history
   }, 'button');
   return (
-    <button className={buttonClass}>
-      {src && <img className='button__icon' src={src} alt="gear" />}
-      {!text && !history ? <span className="button__text">{textWithIcon}</span> : text}
+    <button onClick={onClick} className={buttonClass} disabled={disabled}>
+      {src && <img className='button__icon' src={src} alt="gear" disabled={disabled} />}
+      {!text && !history ? <span className="button__text" disabled={disabled}>{textWithIcon}</span> : text}
     </button>
   );
 }
