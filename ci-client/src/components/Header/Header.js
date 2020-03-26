@@ -21,7 +21,7 @@ export function Header({ settings, button, history, title, details, onClick}) {
            {details ?  <Button src='/images/rebuild.svg' textWithIcon='Rebuild' header /> :<Button  onClick={onClick} src='/images/play.svg' textWithIcon='Run build' header />}
           <Button src='/images/gear.svg' header history /> 
         </div>
-          : button && <Button src='/images/gear.svg' textWithIcon='Settings' header />}
+          : button && <Button onClick={onClick} src='/images/gear.svg' textWithIcon='Settings' header />}
       </header>
    
   );

@@ -1,8 +1,9 @@
-@import '../../constants.scss';
-@import '../../mixins.scss';
+@import '../constants.scss';
+@import '../mixins.scss';
 
 .start {
   flex-grow: 1;
+  position: relative;
 }
 
 .settings-info {

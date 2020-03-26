@@ -1,7 +1,6 @@
 const { gitClone, compareCommit, getCommitInfo, stopWatcher, watcher } = require('./git');
 const { writeLog, readLog, checkLog } = require('./cashLog');
 const axios = require('../utils/axios-inst');
-
 const store = {}
 
 // Получаю настройки
@@ -17,14 +16,17 @@ module.exports.getSettings = async (_, res) => {
   if (status !== 200) {
     return res.status(500).send('bad request');
   }
+  if ('data' in data) {
+    return res.send({
+      id: data.data.id,
+      repoName: data.data.repoName,
+      buildCommand: data.data.buildCommand,
+      mainBranch: data.data.mainBranch,
+      period: data.data.period
+    });
+  }
+  res.status(204).send('no content');
 
-  res.send({
-    id: data.data.id,
-    repoName: data.data.repoName,
-    buildCommand: data.data.buildCommand,
-    mainBranch: data.data.mainBranch,
-    period: data.data.period
-  });
 }
 
 // Получаю массив со списком билдов
@@ -101,7 +103,7 @@ module.exports.getLogs = async (req, res) => {
       responseType: 'stream'
     });
 
-    const {data} = responseLogs;
+    const { data } = responseLogs;
     await writeLog(buildId, data);
     await readLog(buildId, res);
 

@@ -3,16 +3,16 @@ import classNames  from 'classnames';
 import './Input.scss';
 
 
-export function Input({ labelText, name, require }) {
+export function Input({ labelText, name, require, value, onChange, placeholder }) {
   const paragraph = classNames('settings__paragraph', {
     'settings__require': require
   });
 
   return (
     <>
-      <label className={paragraph} for={name}>{labelText}</label>
+      <label className={paragraph} htmlFor={name}>{labelText}</label>
       <div className="input">
-        <input className="input__field" id={name} type="text" placeholder={name} />
+        <input className="input__field" id={name} type="text" placeholder={placeholder} value={value} onChange={onChange} name={name} required={require}/>
         <button className="input__field-cancel" />
       </div>
     </>

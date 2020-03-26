@@ -72,11 +72,12 @@ async function getCommitInfo(repoName, branchName) {
 }
 
 function watcher(interval, repoName, userName, branchName) {
+  const intervalMs = interval * 60 * 1000; //msecond
   store.fsWatch = fs.watchFile(path.resolve(__dirname, '../', repoName), file => {
     console.log(repoName, '<=== in this repo, files changed');
   });
   store.intervalWatchId = setInterval(async () => {
-    console.log('lol interval', interval);
+    console.log('lol interval', intervalMs, 'msecond');
     if (await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
       await gitPull(userName, repoName);
       const logCommit = await getCommitInfo(repoName, branchName);
@@ -85,7 +86,7 @@ function watcher(interval, repoName, userName, branchName) {
     gitClone(userName, repoName);
     const logCommit = await getCommitInfo(repoName, branchName);
     compareCommit(logCommit, branchName);
-  }, interval);
+  }, intervalMs);
 }
 
 function stopWatcher() {
