@@ -1,6 +1,7 @@
 @import '../constants.scss';
 .details {
   flex-grow: 1;
+  position: relative;
   &__card {
     flex-direction: column;
   }

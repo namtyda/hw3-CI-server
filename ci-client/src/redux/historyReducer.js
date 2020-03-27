@@ -1,7 +1,8 @@
 import { api } from '../api/api';
 const initialState = {
   isLoading: false,
-  buildList: []
+  buildList: [],
+  repoName: ''
 }
 
 export function historyReducer(state = initialState, action) {
@@ -10,6 +11,8 @@ export function historyReducer(state = initialState, action) {
       return { ...state, buildList: [...action.payload] };
     case 'LOAD_TOGGLE':
       return { ...state, isLoading: action.payload };
+    case 'GET_REPONAME':
+      return { ...state, repoName: action.payload }
     default:
       return state;
   }
@@ -25,11 +28,31 @@ const loading = (data) => ({
   payload: data
 });
 
-export const getBuildListThunk = () => (dispatch) => {
+const getRepoName = (data) => ({
+  type: 'GET_REPONAME',
+  payload: data
+});
+
+export const getBuildListThunk = (data) => (dispatch) => {
   dispatch(loading(true));
-  api.getBuildsList()
+  api.getBuildsList(data)
     .then(res => {
       dispatch(actionGetBuilds(res.data));
       dispatch(loading(false));
-    });
+    }).catch(err => console.log(err));
+
+  const repoName = localStorage.getItem('repoName');
+
+  if (repoName) {
+    return dispatch(getRepoName(repoName));
+  }
+  api.getConfig()
+    .then(res => {
+      if (res.status === 200) {
+        dispatch(getRepoName(res.data.repoName));
+        localStorage.setItem('repoName', res.data.repoName);
+      } else {
+        dispatch(getRepoName('No settings in the config'));
+      }
+    }).catch(err => console.log(err));
 }

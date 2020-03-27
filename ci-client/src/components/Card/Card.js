@@ -2,7 +2,7 @@ import React from 'react';
 import './Card.scss';
 import classNames from 'classnames';
 
-export function Card({ details, id, buildNumber, commitMessage, commitHash, branchName, authorName, status, start, duration }) {
+export function Card({ details, id, buildNumber, commitMessage, commitHash = '', branchName, authorName, status, start, duration, onClick }) {
 
   const informClass = classNames('card__information', {
     'details__card': details
@@ -36,8 +36,9 @@ export function Card({ details, id, buildNumber, commitMessage, commitHash, bran
     'card__icon-pr_reject': status === 'Fail' || status === 'Canceled '
   })
 
+  const shortCommitHash = commitHash.slice(0, 6)
   return (
-    <div data-id={id} className="card">
+    <div data-hash={id} onClick={onClick} className="card">
       <div className="card__discription">
         <div className={cardIconClass} />
         <div className={informClass}>
@@ -50,7 +51,7 @@ export function Card({ details, id, buildNumber, commitMessage, commitHash, bran
               <div className="card__git-info">
                 <img className="card__icon-atribute" src="/images/commit.svg" alt="commit icon" />
                 <p className="card__branch">{branchName}</p>
-                <p className="card__commit">{commitHash}</p>
+                <p className="card__commit">{shortCommitHash}</p>
               </div>
               <div className="card__author-container">
                 <img className="card__icon-atribute" src="/images/user.svg" alt="use icon" />

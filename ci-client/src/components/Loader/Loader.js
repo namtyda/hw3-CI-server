@@ -3,6 +3,6 @@ import './Loader.scss';
 
 export function Loader() {
   return (
-    <img className='loader' src='images/loader.svg' alt='loader' />
+    <img className='loader' src='/images/loader.svg' alt='loader' />
   );
 }

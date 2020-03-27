@@ -4,20 +4,36 @@ import { Header } from '../Header/Header';
 import { Footer } from '../Footer/Footer';
 import { Input } from '../Input/Input';
 import { Button } from '../Button/Button';
+import { postSaveSettings } from '../../redux/settingsReducer';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+
 const initialState = {
   repoName: '',
   buildCommand: 'npm ci && npm run build',
-  mainBranch: 'master |',
+  mainBranch: 'master',
   period: ''
 }
-export function Settings() {
+function Settings({ history, postSaveSettings, isCloning }) {
   const [formValues, setFormValues] = useState(initialState);
 
   const handleChange = event => {
     const { name, value } = event.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
-    console.log(/(.)\/(.)/g.test(value));
+    // console.log(/(.)\/(.)/g.test(value));
   }
+
+  const handleResetField = event => {
+    event.preventDefault();
+    const { name } = event.target;
+    setFormValues((prev) => ({ ...prev, [name]: '' }));
+  }
+
+  const handleSaveSettings = event => {
+    event.preventDefault();
+    postSaveSettings(formValues, history);
+  }
+
   return (
     <>
       <div className='settings'>
@@ -26,17 +42,17 @@ export function Settings() {
           <h2 className="settings__title">Settings</h2>
           <p className="settings__subtitle">Configure repository connection and synchronization settings.</p>
           <form className='settings__form'>
-            <Input labelText='GitHub repository' name='repoName' placeholder='user-name/repo-name' require onChange={handleChange} value={formValues.repoName} />
-            <Input labelText='Build command' name='buildCommand' placeholder='build command' require onChange={handleChange} value={formValues.buildCommand} />
-            <Input labelText='Main branch' name='mainBranch' placeholder='branch' onChange={handleChange} value={formValues.mainBranch} />
+            <Input labelText='GitHub repository' name='repoName' placeholder='user-name/repo-name' require onChange={handleChange} value={formValues.repoName} onClick={handleResetField} />
+            <Input labelText='Build command' name='buildCommand' placeholder='build command' require onChange={handleChange} value={formValues.buildCommand} onClick={handleResetField} />
+            <Input labelText='Main branch' name='mainBranch' placeholder='branch' onChange={handleChange} value={formValues.mainBranch} onClick={handleResetField} />
             <div className="settings__time-wrapper">
               <p className="settings__paragraph">Synchronize every</p>
               <input className="input__field input__field_time" type="text" maxLength="3" name='period' onChange={handleChange} value={formValues.period} />
               <p className="settings__paragraph">minutes</p>
             </div>
             <div className="settings__button-wrapper">
-              <Button accent text='Save' settings />
-              <Button text='Cancel' />
+              <Button accent text='Save' settings onClick={handleSaveSettings} disabled={isCloning} />
+              <Button text='Cancel' disabled={isCloning} />
             </div>
           </form>
         </div>
@@ -45,3 +61,10 @@ export function Settings() {
     </>
   );
 }
+
+const mapStateToProps = ({ settings }) => ({
+  isCloning: settings.isCloning,
+  cloningWithError: settings.cloningWithError
+});
+
+export const SettingsConnect = withRouter(connect(mapStateToProps, { postSaveSettings })(Settings));

@@ -8,8 +8,8 @@ const store = {
 };
 
 async function gitClone(userName, repoName) {
-  if (!await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
-    return new Promise((res, rej) => {
+  return new Promise(async (res, rej) => {
+    if (!await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
       const git = spawn("git", ["clone", `https://github.com/${userName}/${repoName}.git`]);
       git.stderr.on('data', err => {
         console.log(err.toString('UTF-8'));
@@ -18,12 +18,13 @@ async function gitClone(userName, repoName) {
       git.on('close', async code => {
         console.log(`Это код завершения процесса клона репы ${code}`);
         if (code === 0) {
-          res()
+          res(code)
         }
-        rej();
+        rej(code);
       });
-    });
-  }
+    }
+    res(0);
+  });
 }
 
 async function gitPull(userName, repoName) {
@@ -40,8 +41,7 @@ async function gitPull(userName, repoName) {
   }
 }
 async function getCommitInfo(repoName, branchName) {
-  if (await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
-
+  if (await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {   
     let hashLast = store.lastCommitHash.length > 0 ? store.lastCommitHash + '...HEAD' : '--no-decorate';
     let buff = Buffer.alloc(0);
     let result;

@@ -4,9 +4,9 @@ import { Provider } from 'react-redux';
 import { store } from '../../redux/store';
 import './App.scss';
 import { StartConnect } from '../Start/Start';
-import { Settings } from '../Settings/Settings';
+import { SettingsConnect } from '../Settings/Settings';
 import { HistoryConnect } from '../History/History';
-import { Details } from '../Details/Details';
+import { DetailsConnect } from '../Details/Details';
 
 
 function App() {
@@ -16,9 +16,9 @@ function App() {
         <div className="App">
           <Switch>
             <Route path='/' exact component={StartConnect} />
-            <Route path='/settings' exact component={Settings} />
+            <Route path='/settings' exact component={SettingsConnect} />
             <Route path='/history' exact component={HistoryConnect} />
-            <Route path='/build/:id' component={Details} />
+            <Route path='/build/:id' component={DetailsConnect} />
           </Switch>
         </div>
       </Provider>
@@ -26,4 +26,4 @@ function App() {
   );
 }
 
-export default  App;
+export default App;
