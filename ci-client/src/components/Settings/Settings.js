@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MaskedInput from 'react-text-mask'
 import './Settings.scss';
 import { Header } from '../Header/Header';
 import { Footer } from '../Footer/Footer';
@@ -14,13 +15,13 @@ const initialState = {
   mainBranch: 'master',
   period: ''
 }
-function Settings({ history, postSaveSettings, isCloning }) {
+function Settings({ history, postSaveSettings, isCloning, cloningWithError }) {
   const [formValues, setFormValues] = useState(initialState);
 
   const handleChange = event => {
     const { name, value } = event.target;
+    console.log(formValues.period)
     setFormValues((prev) => ({ ...prev, [name]: value }));
-    // console.log(/(.)\/(.)/g.test(value));
   }
 
   const handleResetField = event => {
@@ -29,9 +30,15 @@ function Settings({ history, postSaveSettings, isCloning }) {
     setFormValues((prev) => ({ ...prev, [name]: '' }));
   }
 
+  const handleCancel = event => {
+    event.preventDefault();
+    history.push('/');
+  }
   const handleSaveSettings = event => {
     event.preventDefault();
-    postSaveSettings(formValues, history);
+    if (/(.)\/(.)/g.test(formValues.repoName) && formValues.buildCommand.length > 5) {
+      postSaveSettings(formValues, history);
+    }
   }
 
   return (
@@ -45,14 +52,15 @@ function Settings({ history, postSaveSettings, isCloning }) {
             <Input labelText='GitHub repository' name='repoName' placeholder='user-name/repo-name' require onChange={handleChange} value={formValues.repoName} onClick={handleResetField} />
             <Input labelText='Build command' name='buildCommand' placeholder='build command' require onChange={handleChange} value={formValues.buildCommand} onClick={handleResetField} />
             <Input labelText='Main branch' name='mainBranch' placeholder='branch' onChange={handleChange} value={formValues.mainBranch} onClick={handleResetField} />
+            {cloningWithError && <span className='settings__fail'>fail clone repository</span>}
             <div className="settings__time-wrapper">
               <p className="settings__paragraph">Synchronize every</p>
-              <input className="input__field input__field_time" type="text" maxLength="3" name='period' onChange={handleChange} value={formValues.period} />
+              <MaskedInput className="input__field input__field_time" name='period' onChange={handleChange} value={formValues.period} mask={[/\d/, /\d/]} guide={false} />
               <p className="settings__paragraph">minutes</p>
             </div>
             <div className="settings__button-wrapper">
               <Button accent text='Save' settings onClick={handleSaveSettings} disabled={isCloning} />
-              <Button text='Cancel' disabled={isCloning} />
+              <Button text='Cancel' disabled={isCloning} onClick={handleCancel} />
             </div>
           </form>
         </div>

@@ -76,7 +76,7 @@ module.exports.getBuildId = async (req, res) => {
   if (status !== 200) {
     return res.status(500)
   }
-  res.send(data.data);
+  res.status(200).send(data.data);
 }
 
 // Получение логов билда по buildId
@@ -130,7 +130,7 @@ module.exports.postAddInstQueue = async (req, res) => {
     });
 
   } catch (err) {
-    return res.status(500).send(err);
+    return res.status(500).send(err.toString());
   }
 
   const { status, data } = responseQueue;
@@ -166,14 +166,13 @@ module.exports.postSettings = async (req, res) => {
     return res.status(500).send('bad request or server down');
   }
   stopWatcher();
-  const result = await gitClone(store.userName, store.repoName);
+  await gitClone(store.userName, store.repoName);
   const list = await getCommitInfo(store.repoName, store.mainBranch);
 
   await compareCommit(list, store.mainBranch, store.first);
   store.first = false;
   watcher(store.period, store.repoName, store.userName, store.mainBranch);
-  if (result === 0) {
-    return res.status(200).send('ok');
-  }
-  res.status(400).send('fail clone repo');
+  
+  res.status(200).send('ok');
+  
 }

@@ -66,12 +66,7 @@ export const getDetailsBuild = (data) => (dispatch) => {
     }).catch(err => {
       dispatch(loading(false));
     });
-
-  const repoName = localStorage.getItem('repoName');
-  if (repoName) {
-    return dispatch(getRepoName(repoName));
-  }
-
+    
   api.getConfig()
     .then(res => {
       if (res.status === 200) {

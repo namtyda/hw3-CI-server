@@ -2,7 +2,8 @@ import { api } from '../api/api';
 const initialState = {
   isLoading: false,
   buildList: [],
-  repoName: ''
+  repoName: '',
+  runNewBuild: false
 }
 
 export function historyReducer(state = initialState, action) {
@@ -12,7 +13,9 @@ export function historyReducer(state = initialState, action) {
     case 'LOAD_TOGGLE':
       return { ...state, isLoading: action.payload };
     case 'GET_REPONAME':
-      return { ...state, repoName: action.payload }
+      return { ...state, repoName: action.payload };
+      case 'RUN_NEW_BUILD':
+      return { ...state, runNewBuild: action.payload };
     default:
       return state;
   }
@@ -33,6 +36,11 @@ const getRepoName = (data) => ({
   payload: data
 });
 
+const addBuildInQueue = (status) => ({
+  type: 'RUN_NEW_BUILD',
+  payload: status
+});
+
 export const getBuildListThunk = (data) => (dispatch) => {
   dispatch(loading(true));
   api.getBuildsList(data)
@@ -41,18 +49,25 @@ export const getBuildListThunk = (data) => (dispatch) => {
       dispatch(loading(false));
     }).catch(err => console.log(err));
 
-  const repoName = localStorage.getItem('repoName');
-
-  if (repoName) {
-    return dispatch(getRepoName(repoName));
-  }
+ 
   api.getConfig()
     .then(res => {
       if (res.status === 200) {
         dispatch(getRepoName(res.data.repoName));
-        localStorage.setItem('repoName', res.data.repoName);
       } else {
         dispatch(getRepoName('No settings in the config'));
       }
     }).catch(err => console.log(err));
+}
+
+export const postNewBuildQueue = (data, history) => (dispatch) => {
+  dispatch(addBuildInQueue(true));
+  api.postAddQueue(data)
+    .then(res => {
+      history.push(`/build/${res.data.id}`);
+      dispatch(addBuildInQueue(false));
+    }).catch(err => {
+      dispatch(addBuildInQueue(false));
+      console.log(err);
+    });
 }

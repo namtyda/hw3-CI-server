@@ -6,14 +6,30 @@ import { Footer } from '../Footer/Footer';
 import { PopUp } from '../PopUp/PopUp';
 import { Loader } from '../Loader/Loader';
 import { connect } from 'react-redux';
-import { getBuildListThunk } from '../../redux/historyReducer';
+import { getBuildListThunk, postNewBuildQueue } from '../../redux/historyReducer';
 
-function History({ getBuildListThunk, isLoading, buildList, repoName, history }) {
+function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, repoName, history, runNewBuild }) {
   const [toggle, setToggle] = useState(false);
-
+  const [foundCommit, setFoundCommit] = useState(false);
   const [showLimit, setShowLitim] = useState({
     limit: 10
   });
+
+  const [formValue, setFormValue] = useState({
+    hash: ''
+  });
+
+  const handleChange = event => {
+    const { value, name } = event.currentTarget;
+    setFormValue(state => ({ ...state, [name]: value }));
+  }
+
+  const handleReset = event => {
+    const { name } = event.currentTarget;
+    event.preventDefault();
+    setFormValue(({ [name]: '' }));
+    setFoundCommit(false);
+  }
 
   useEffect(() => {
     getBuildListThunk(showLimit.limit);
@@ -21,9 +37,14 @@ function History({ getBuildListThunk, isLoading, buildList, repoName, history })
   }, [getBuildListThunk, showLimit.limit])
 
   const handleClickRunBuild = () => {
-    setToggle(!toggle);
+    setToggle(true);
   }
 
+  const handleCloseRunBuild = () => {
+    setToggle(false);
+    setFoundCommit(false);
+    setFormValue(({ hash: '' }));
+  }
   const handleRedirect = () => {
     history.push('/settings')
   }
@@ -37,7 +58,22 @@ function History({ getBuildListThunk, isLoading, buildList, repoName, history })
     const stepShow = 5;
     setShowLitim((state) => ({ ...state, limit: state.limit + stepShow }));
   }
-  // const testFilter = buildList.filter(({ commitHash }) => commitHash === '2b1ccca3e40d91befb2f74be4bda48ba6d0d4d43')
+
+  const handleRunBuild = (event) => {
+    event.preventDefault();
+    const searchedObj = buildList.find(({ commitHash }) => commitHash === formValue.hash);
+    if (searchedObj) {
+      postNewBuildQueue({
+        commitHash: searchedObj.commitHash,
+        commitMessage: searchedObj.commitMessage,
+        branchName: searchedObj.branchName,
+        authorName: searchedObj.authorName
+      }, history);
+    } else {
+      setFoundCommit(true);
+    }
+
+  }
 
 
   const mapCardTopData = buildList.map(({ id, buildNumber, commitMessage, commitHash, branchName, authorName, status, start, duration }) => {
@@ -57,7 +93,7 @@ function History({ getBuildListThunk, isLoading, buildList, repoName, history })
             <button className="button history__button" onClick={handleShowMore}>Show more</button>
           </div>
         }
-        {toggle ? <PopUp /> : null}
+        {toggle ? <PopUp found={foundCommit} onChange={handleChange} onClick={handleReset} name={'hash'} value={formValue.hash} onClickRunBuild={handleRunBuild} closePopUp={handleCloseRunBuild} disabled={runNewBuild} /> : null}
       </div>
       <Footer />
     </>
@@ -66,7 +102,8 @@ function History({ getBuildListThunk, isLoading, buildList, repoName, history })
 const mapStateToProps = ({ history }) => ({
   isLoading: history.isLoading,
   buildList: history.buildList,
-  repoName: history.repoName
+  repoName: history.repoName,
+  runNewBuild: history.runNewBuild
 });
 
-export const HistoryConnect = connect(mapStateToProps, { getBuildListThunk })(History);
+export const HistoryConnect = connect(mapStateToProps, { getBuildListThunk, postNewBuildQueue })(History);

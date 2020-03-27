@@ -3,11 +3,11 @@ import { api } from '../api/api';
 const initialState = {
   repoName: '',
   buildCommand: 'npm ci && npm run build',
-  mainBranch: 'master |',
+  mainBranch: 'master',
   period: '',
   isLoad: false,
   isCloning: false,
-  cloningWithError: false
+  cloningWithError: false,
 }
 
 export function settingsReducer(state = initialState, action) {
@@ -53,7 +53,6 @@ export const getConfigThunk = (history) => (dispatch) => {
         history.push('/history');
         dispatch(loadSettings(false));
         dispatch(addConfig(response.data));
-        localStorage.setItem('repoName', response.data.repoName);
       } else {
         history.push('/');
         dispatch(loadSettings(false));
@@ -70,7 +69,6 @@ export const postSaveSettings = (data, history) => (dispatch) => {
         dispatch(errorWithCloning(true));
         dispatch(cloningRepo(false));
       } else {
-        console.log('ff')
         dispatch(cloningRepo(false));
         history.push('/history');
       }
