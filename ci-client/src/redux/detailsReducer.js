@@ -49,7 +49,7 @@ const getLogs = (data) => ({
   payload: data
 });
 
-export const getDetailsBuild = (data) => (dispatch) => {
+export const getDetailsBuild = (data, history) => (dispatch) => {
   dispatch(loading(true));
   api.getDetailsBuild(data)
     .then(res => {
@@ -66,13 +66,13 @@ export const getDetailsBuild = (data) => (dispatch) => {
     }).catch(err => {
       dispatch(loading(false));
     });
-    
+
   api.getConfig()
     .then(res => {
       if (res.status === 200) {
         dispatch(getRepoName(res.data.repoName));
-        localStorage.setItem('repoName', res.data.repoName);
       } else {
+        history.push('/history');
         dispatch(getRepoName('No settings in the config'));
       }
     }).catch(err => console.log(err));

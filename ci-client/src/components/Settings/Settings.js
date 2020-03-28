@@ -32,11 +32,11 @@ function Settings({ history, postSaveSettings, isCloning, cloningWithError }) {
 
   const handleCancel = event => {
     event.preventDefault();
-    history.push('/');
+    history.goBack();
   }
   const handleSaveSettings = event => {
     event.preventDefault();
-    if (/(.)\/(.)/g.test(formValues.repoName) && formValues.buildCommand.length > 5) {
+    if (/(.)\/(.)/g.test(formValues.repoName) && formValues.buildCommand.length > 5 && formValues.period.length > 0) {
       postSaveSettings(formValues, history);
     }
   }

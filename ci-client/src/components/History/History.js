@@ -7,10 +7,10 @@ import { PopUp } from '../PopUp/PopUp';
 import { Loader } from '../Loader/Loader';
 import { connect } from 'react-redux';
 import { getBuildListThunk, postNewBuildQueue } from '../../redux/historyReducer';
+import { getConfigThunk } from '../../redux/settingsReducer';
 
-function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, repoName, history, runNewBuild }) {
+function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, repoName, history, runNewBuild, errorPostReq, getConfigThunk }) {
   const [toggle, setToggle] = useState(false);
-  const [foundCommit, setFoundCommit] = useState(false);
   const [showLimit, setShowLitim] = useState({
     limit: 10
   });
@@ -18,6 +18,9 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
   const [formValue, setFormValue] = useState({
     hash: ''
   });
+  useEffect(() => {
+    getConfigThunk(history)
+  }, [getConfigThunk, history]);
 
   const handleChange = event => {
     const { value, name } = event.currentTarget;
@@ -28,12 +31,10 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
     const { name } = event.currentTarget;
     event.preventDefault();
     setFormValue(({ [name]: '' }));
-    setFoundCommit(false);
   }
 
   useEffect(() => {
     getBuildListThunk(showLimit.limit);
-    localStorage.getItem('repoName')
   }, [getBuildListThunk, showLimit.limit])
 
   const handleClickRunBuild = () => {
@@ -42,7 +43,6 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
 
   const handleCloseRunBuild = () => {
     setToggle(false);
-    setFoundCommit(false);
     setFormValue(({ hash: '' }));
   }
   const handleRedirect = () => {
@@ -61,18 +61,9 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
 
   const handleRunBuild = (event) => {
     event.preventDefault();
-    const searchedObj = buildList.find(({ commitHash }) => commitHash === formValue.hash);
-    if (searchedObj) {
-      postNewBuildQueue({
-        commitHash: searchedObj.commitHash,
-        commitMessage: searchedObj.commitMessage,
-        branchName: searchedObj.branchName,
-        authorName: searchedObj.authorName
-      }, history);
-    } else {
-      setFoundCommit(true);
-    }
-
+    postNewBuildQueue({
+      commitHash: formValue.hash,
+    }, history);
   }
 
 
@@ -93,7 +84,7 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
             <button className="button history__button" onClick={handleShowMore}>Show more</button>
           </div>
         }
-        {toggle ? <PopUp found={foundCommit} onChange={handleChange} onClick={handleReset} name={'hash'} value={formValue.hash} onClickRunBuild={handleRunBuild} closePopUp={handleCloseRunBuild} disabled={runNewBuild} /> : null}
+        {toggle ? <PopUp found={errorPostReq} onChange={handleChange} onClick={handleReset} name={'hash'} value={formValue.hash} onClickRunBuild={handleRunBuild} closePopUp={handleCloseRunBuild} disabled={runNewBuild} /> : null}
       </div>
       <Footer />
     </>
@@ -103,7 +94,9 @@ const mapStateToProps = ({ history }) => ({
   isLoading: history.isLoading,
   buildList: history.buildList,
   repoName: history.repoName,
-  runNewBuild: history.runNewBuild
+  runNewBuild: history.runNewBuild,
+  allBuildList: history.allBuildList,
+  errorPostReq: history.errorPostReq
 });
 
-export const HistoryConnect = connect(mapStateToProps, { getBuildListThunk, postNewBuildQueue })(History);
+export const HistoryConnect = connect(mapStateToProps, { getBuildListThunk, postNewBuildQueue, getConfigThunk })(History);

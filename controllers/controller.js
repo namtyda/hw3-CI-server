@@ -42,7 +42,7 @@ module.exports.getBuilds = async (req, res) => {
       }
     });
   } catch (err) {
-    return res.status(500).send(err)
+    return res.status(500).send(err.toString())
   }
   const { data, status } = responseBuilds;
 
@@ -114,23 +114,26 @@ module.exports.getLogs = async (req, res) => {
 
 // Добавление в очередь 
 module.exports.postAddInstQueue = async (req, res) => {
+  const allCommits = await getCommitInfo(store.repoName, store.mainBranch, all = true);
+
   const { params, body } = req;
   const { commitHash } = params;
 
   if (commitHash === undefined) {
     return res.status(400).send('Commit hash in params not valid')
   }
+  const searchedCommits = allCommits.find(data => data.commitHash === commitHash);
   let responseQueue;
   try {
     responseQueue = await axios.post('/build/request', {
-      commitMessage: body.commitMessage,
+      commitMessage: searchedCommits.commitMessage,
       commitHash,
-      branchName: body.branchName,
-      authorName: body.authorName
+      branchName: store.mainBranch,
+      authorName: searchedCommits.authorName
     });
 
   } catch (err) {
-    return res.status(500).send(err.toString());
+    return res.status(500).send(err);
   }
 
   const { status, data } = responseQueue;
@@ -168,11 +171,9 @@ module.exports.postSettings = async (req, res) => {
   stopWatcher();
   await gitClone(store.userName, store.repoName);
   const list = await getCommitInfo(store.repoName, store.mainBranch);
-
   await compareCommit(list, store.mainBranch, store.first);
   store.first = false;
   watcher(store.period, store.repoName, store.userName, store.mainBranch);
-  
+
   res.status(200).send('ok');
-  
 }

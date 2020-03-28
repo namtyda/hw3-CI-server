@@ -1,4 +1,6 @@
 import React from 'react';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale'
 import './Card.scss';
 import classNames from 'classnames';
 
@@ -62,11 +64,11 @@ export function Card({ details, id, buildNumber, commitMessage, commitHash = '',
           <div className={cardDateClass}>
             <div className={cardDayContClass}>
               <img className="card__icon-atribute" src="/images/calendar.svg" alt="calendar icon" />
-              <p className={cardDayClass}>{start}</p>
+              <p className={cardDayClass}>{start && format(new Date(start), 'd MMM HH:mm', { locale: ru }).replace('.', ',')}</p>
             </div>
             <div className="card__time-container">
               <img className="card__icon-atribute" src="/images/time.svg" alt="time icon" />
-              <p className="card__time">{duration}</p>
+              <p className="card__time">{duration && `${duration / 60 ^ 0} ч ${duration % 60} мин`}</p>
             </div>
           </div>
         </div>

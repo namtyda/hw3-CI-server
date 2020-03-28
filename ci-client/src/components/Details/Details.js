@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import './Details.scss';
 import { Header } from '../Header/Header';
 import { Footer } from '../Footer/Footer';
@@ -8,10 +8,10 @@ import { Loader } from '../Loader/Loader';
 import { getDetailsBuild, postBuildInQueue } from '../../redux/detailsReducer';
 
 function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo, repoName, isLoading, logs }) {
-  useEffect(() => {
-    getDetailsBuild(match.params.id);
-  }, [getDetailsBuild, match.params.id]);
 
+  useEffect(() => {
+    getDetailsBuild(match.params.id, history);
+  }, [getDetailsBuild, match.params.id, history]);
 
   const { id, buildNumber = 0, commitMessage = 'build not found', commitHash, branchName, authorName, status, start, duration } = buildInfo;
 
@@ -21,11 +21,7 @@ function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo,
 
   const handleRebuild = () => {
     postBuildInQueue({
-      commitHash,
-      commitMessage,
-      branchName,
-      authorName,
-      status
+      commitHash
     }, history);
   }
 
@@ -37,9 +33,11 @@ function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo,
           <div className='content'>
             <Card details id={id} buildNumber={buildNumber} commitMessage={commitMessage}
               commitHash={commitHash} branchName={branchName} authorName={authorName} status={status} start={start} duration={duration} />
-            <div className="details__log">
-              <pre>{logs}</pre>
-            </div>
+            {logs &&
+              <div className="details__log">
+                <pre>{logs}</pre>
+              </div>
+            }
           </div>
         }
       </div>
