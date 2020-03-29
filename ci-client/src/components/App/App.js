@@ -13,6 +13,7 @@ function App() {
   return (
     <Router>
       <Provider store={store}>
+        
         <div className="App">
           <Switch>
             <Route path='/' exact component={StartConnect} />

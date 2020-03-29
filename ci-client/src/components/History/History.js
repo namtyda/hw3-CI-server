@@ -80,6 +80,7 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
         <Header button history title={repoName} onClick={handleClickRunBuild} onClick2={handleRedirect} />
         {isLoading ? <Loader /> :
           <div className='content'>
+            
             <div className='history__list'>
               {mapCardTopData}
             </div>

@@ -56,6 +56,7 @@ module.exports.getBuilds = async (req, res) => {
 module.exports.getBuildId = async (req, res) => {
   const { params } = req;
   const { buildId } = params;
+  
 
   if (buildId === undefined) {
     return res.status(400).send('build paramas not defined');

@@ -1,6 +1,7 @@
 @import '../constants.scss';
 
 .history {
+  overflow-anchor: none;
   position: relative;
   flex-grow: 1;
   &__button {

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import Convert from 'ansi-to-html';
 import './Details.scss';
 import { Header } from '../Header/Header';
 import { Footer } from '../Footer/Footer';
@@ -28,6 +29,7 @@ function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo,
       commitHash
     }, history);
   }
+  const convert = new Convert({ fg: '#000', bg: '#000' });
 
   return (
     <>
@@ -39,7 +41,7 @@ function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo,
               commitHash={commitHash} branchName={branchName} authorName={authorName} status={status} start={start} duration={duration} />
             {logs &&
               <div className="details__log">
-                <pre>{logs}</pre>
+                <pre>{convert.toHtml(logs)}</pre>
               </div>
             }
           </div>
