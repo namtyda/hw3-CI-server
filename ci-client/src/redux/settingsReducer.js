@@ -50,9 +50,11 @@ export const getConfigThunk = (history) => (dispatch) => {
   api.getConfig()
     .then(response => {
       if (response.status === 200) {
-        history.push('/history');
-        dispatch(loadSettings(false));
-        dispatch(addConfig(response.data));
+        if (history.location.pathname !== '/history') {
+          history.push('/history');
+          dispatch(loadSettings(false));
+          dispatch(addConfig(response.data));
+        }
       } else {
         history.push('/');
         dispatch(loadSettings(false));

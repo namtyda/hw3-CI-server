@@ -8,6 +8,7 @@ import { Loader } from '../Loader/Loader';
 import { connect } from 'react-redux';
 import { getBuildListThunk, postNewBuildQueue } from '../../redux/historyReducer';
 import { getConfigThunk } from '../../redux/settingsReducer';
+import { withRouter } from 'react-router-dom';
 
 function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, repoName, history, runNewBuild, errorPostReq, getConfigThunk }) {
   const [toggle, setToggle] = useState(false);
@@ -63,7 +64,7 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
 
   const handleDetails = event => {
     const { dataset } = event.currentTarget;
-    history.push(`build/${dataset.hash}`);
+    history.push(`/build/${dataset.hash}`);
   }
 
   const handleShowMore = () => {
@@ -78,7 +79,6 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
       commitHash: formValue.hash,
     }, history);
   }
-  console.count()
   const mapCardTopData = buildList.map(({ id, buildNumber, commitMessage, commitHash, branchName, authorName, status, start, duration }) => {
     return <Card key={id} id={id} buildNumber={buildNumber} commitMessage={commitMessage}
       commitHash={commitHash} branchName={branchName} authorName={authorName} status={status} start={start} duration={duration} onClick={handleDetails}
@@ -112,4 +112,4 @@ const mapStateToProps = ({ history }) => ({
   errorPostReq: history.errorPostReq
 });
 
-export const HistoryConnect = connect(mapStateToProps, { getBuildListThunk, postNewBuildQueue, getConfigThunk })(History);
+export const HistoryConnect = withRouter(connect(mapStateToProps, { getBuildListThunk, postNewBuildQueue, getConfigThunk })(History));

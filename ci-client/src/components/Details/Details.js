@@ -7,9 +7,9 @@ import { Card } from '../Card/Card';
 import { connect } from 'react-redux';
 import { Loader } from '../Loader/Loader';
 import { getDetailsBuild, postBuildInQueue } from '../../redux/detailsReducer';
+import { withRouter } from 'react-router-dom';
 
 function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo, repoName, isLoading, logs }) {
-
   useEffect(() => {
     getDetailsBuild(match.params.id, history);
   }, [getDetailsBuild, match.params.id, history]);
@@ -58,4 +58,4 @@ const mapStateToProps = ({ details }) => ({
   buildInfo: details.buildInfo,
   logs: details.logs
 });
-export const DetailsConnect = connect(mapStateToProps, { getDetailsBuild, postBuildInQueue })(Details);
+export const DetailsConnect = withRouter(connect(mapStateToProps, { getDetailsBuild, postBuildInQueue })(Details));
