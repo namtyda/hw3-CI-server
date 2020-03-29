@@ -27,7 +27,6 @@ function Settings({ history, postSaveSettings, isCloning, cloningWithError }) {
 
   const handleChange = event => {
     const { name, value } = event.target;
-    console.log(formValues.period)
     setFormValues((prev) => ({ ...prev, [name]: value }));
   }
 
@@ -54,7 +53,6 @@ function Settings({ history, postSaveSettings, isCloning, cloningWithError }) {
       mainBranch: false,
       period: false
     }
-
     if (!(/(.)\/(.)/g.test(formValues.repoName)) && !(formValues.repoName.length > 2)) {
       errors.repoName = true;
     }

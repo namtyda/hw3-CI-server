@@ -11,6 +11,11 @@ import { getConfigThunk } from '../../redux/settingsReducer';
 
 function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, repoName, history, runNewBuild, errorPostReq, getConfigThunk }) {
   const [toggle, setToggle] = useState(false);
+  const [scroll, setScroll] = useState({
+    x: 0,
+    y: 200
+  });
+
   const [showLimit, setShowLitim] = useState({
     limit: 10
   });
@@ -18,6 +23,11 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
   const [formValue, setFormValue] = useState({
     hash: ''
   });
+
+  useEffect(() => {
+    window.scrollTo(scroll.x, scroll.y);
+  });
+
   useEffect(() => {
     getConfigThunk(history)
   }, [getConfigThunk, history]);
@@ -50,7 +60,7 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
     history.push('/settings')
   }
 
-  
+
   const handleDetails = event => {
     const { dataset } = event.currentTarget;
     history.push(`build/${dataset.hash}`);
@@ -58,6 +68,7 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
 
   const handleShowMore = () => {
     const stepShow = 5;
+    setScroll({ x: window.pageXOffset, y: window.pageYOffset });
     setShowLitim((state) => ({ ...state, limit: state.limit + stepShow }));
   }
 
@@ -67,8 +78,7 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
       commitHash: formValue.hash,
     }, history);
   }
-
-
+  console.count()
   const mapCardTopData = buildList.map(({ id, buildNumber, commitMessage, commitHash, branchName, authorName, status, start, duration }) => {
     return <Card key={id} id={id} buildNumber={buildNumber} commitMessage={commitMessage}
       commitHash={commitHash} branchName={branchName} authorName={authorName} status={status} start={start} duration={duration} onClick={handleDetails}
@@ -80,7 +90,7 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
         <Header button history title={repoName} onClick={handleClickRunBuild} onClick2={handleRedirect} />
         {isLoading ? <Loader /> :
           <div className='content'>
-            
+
             <div className='history__list'>
               {mapCardTopData}
             </div>
