@@ -48,7 +48,7 @@ async function getCommitInfo(repoName, branchName, all = false, switchRepo = fal
     let buff = Buffer.alloc(0);
     let result;
     return new Promise((resolve, rej) => {
-      const git = spawn('git', ['log', '--pretty=format:{"commitHash":"%H", "authorName":"%cn", "commitMessage":"%s"}', hashLast, `origin/${branchName}`], { cwd: path.join(__dirname, '../', repoName) });
+      const git = spawn('git', ['log', '--pretty=format:{"commitHash":"%H", "authorName":"%cn", "commitMessage":"%s"}', hashLast, branchName], { cwd: path.join(__dirname, '../', repoName) });
 
 
       git.stderr.on('data', err => {
