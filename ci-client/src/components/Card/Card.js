@@ -29,13 +29,13 @@ export function Card({ details, id, buildNumber, commitMessage, commitHash = '',
   const cardNumberClass = classNames('card__number-ticket', {
     'card__number-ticket_good': status === 'Success',
     'card__number-ticket_queue': status === 'Waiting' || status === 'InProgress',
-    'card__number-ticket_reject': status === 'Fail' || status === 'Canceled '
+    'card__number-ticket_reject': status === 'Fail' || status === 'Canceled'
   });
 
   const cardIconClass = classNames('card__icon-pr', {
     'card__icon-pr_good': status === 'Success',
     'card__icon-pr_queue': status === 'Waiting' || status === 'InProgress',
-    'card__icon-pr_reject': status === 'Fail' || status === 'Canceled '
+    'card__icon-pr_reject': status === 'Fail' || status === 'Canceled'
   })
 
   const shortCommitHash = commitHash.slice(0, 6)

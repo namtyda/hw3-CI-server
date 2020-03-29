@@ -19,6 +19,10 @@ function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo,
     history.push('/settings');
   }
 
+  const handleRedirectHistory = () => {
+    history.push('/history');
+  }
+
   const handleRebuild = () => {
     postBuildInQueue({
       commitHash
@@ -28,7 +32,7 @@ function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo,
   return (
     <>
       <div className='details'>
-        <Header button history details title={repoName} onClick={handleRebuild} onClick2={HandleredirectSettings} />
+        <Header button history details title={repoName} onClick={handleRebuild} onClick2={HandleredirectSettings} redirectHistory={handleRedirectHistory} />
         {isLoading ? <Loader /> :
           <div className='content'>
             <Card details id={id} buildNumber={buildNumber} commitMessage={commitMessage}

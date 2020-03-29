@@ -170,9 +170,8 @@ module.exports.postSettings = async (req, res) => {
   }
   stopWatcher();
   await gitClone(store.userName, store.repoName);
-  const list = await getCommitInfo(store.repoName, store.mainBranch);
+  const list = await getCommitInfo(store.repoName, store.mainBranch, false, true);
   await compareCommit(list, store.mainBranch, store.first);
-  store.first = false;
   watcher(store.period, store.repoName, store.userName, store.mainBranch);
 
   res.status(200).send('ok');

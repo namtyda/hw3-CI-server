@@ -8,6 +8,12 @@
 
   &_settings {
     margin-bottom: $space-l;
+  }
+  &_details {
+    &:hover {
+      cursor: pointer;
+      opacity: 0.6;
+    }
   }  
 
   &__title {

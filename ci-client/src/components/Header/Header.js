@@ -3,19 +3,21 @@ import classNames from 'classnames';
 import './Header.scss';
 import { Button } from '../Button/Button';
 
-export function Header({ settings, button, history, title, details, onClick, onClick2 }) {
+export function Header({ settings, button, history, title, details, onClick, onClick2, redirectHistory }) {
   const headerClass = classNames({
     'header_settings': settings,
     'header__content': !settings,
-    'header__history-indent': history
+    'header__history-indent': history,
   }, 'header', 'content');
 
   const headerTitleClass = classNames('header__title', {
-    'header__title_history': history
+    'header__title_history': history,
+    'header_details': details
   });
+
   return (
     <header className={headerClass}>
-      <h1 className={headerTitleClass}>{title}</h1>
+      <h1 className={headerTitleClass} onClick={redirectHistory}>{title}</h1>
       {history ?
         <div className='header__button-wrapper'>
           {details ? <Button src='/images/rebuild.svg' textWithIcon='Rebuild' header onClick={onClick} /> : <Button onClick={onClick} src='/images/play.svg' textWithIcon='Run build' header />}

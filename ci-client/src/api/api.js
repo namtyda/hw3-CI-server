@@ -45,7 +45,6 @@ export const api = {
   },
 
   postSaveSettings(data) {
-
     return axios.post('/settings', {
       repoName: data.repoName,
       buildCommand: data.buildCommand,

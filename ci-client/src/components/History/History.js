@@ -22,6 +22,10 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
     getConfigThunk(history)
   }, [getConfigThunk, history]);
 
+  useEffect(() => {
+    getBuildListThunk(showLimit.limit);
+  }, [getBuildListThunk, showLimit.limit]);
+
   const handleChange = event => {
     const { value, name } = event.currentTarget;
     setFormValue(state => ({ ...state, [name]: value }));
@@ -33,9 +37,6 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
     setFormValue(({ [name]: '' }));
   }
 
-  useEffect(() => {
-    getBuildListThunk(showLimit.limit);
-  }, [getBuildListThunk, showLimit.limit])
 
   const handleClickRunBuild = () => {
     setToggle(true);
@@ -49,6 +50,7 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
     history.push('/settings')
   }
 
+  
   const handleDetails = event => {
     const { dataset } = event.currentTarget;
     history.push(`build/${dataset.hash}`);

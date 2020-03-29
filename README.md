@@ -6,6 +6,8 @@
 npm i
 ```
 Создаем .env, и запускаем server.js
+
+cd ci-client && npm i && npm start
 #### .env
 
 Создать в корне .env, в него записать 

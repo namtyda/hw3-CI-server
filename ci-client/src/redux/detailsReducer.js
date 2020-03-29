@@ -62,9 +62,11 @@ export const getDetailsBuild = (data, history) => (dispatch) => {
             dispatch(loading(false));
           }).catch(err => console.log(err));
       }
+      dispatch(getLogs(''));
       dispatch(loading(false));
     }).catch(err => {
       dispatch(loading(false));
+      console.log(err);
     });
 
   api.getConfig()

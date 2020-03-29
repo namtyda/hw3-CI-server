@@ -39,7 +39,10 @@ async function gitPull(userName, repoName) {
     });
   }
 }
-async function getCommitInfo(repoName, branchName, all = false) {
+async function getCommitInfo(repoName, branchName, all = false, switchRepo = false) {
+  switchRepo ? store.lastCommitHash = '' : store.lastCommitHash
+
+
   if (await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
     let hashLast = store.lastCommitHash.length > 0 && !all ? store.lastCommitHash + '...HEAD' : '--no-decorate';
     let buff = Buffer.alloc(0);
