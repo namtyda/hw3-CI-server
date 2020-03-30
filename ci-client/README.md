@@ -5,7 +5,5 @@
 
 cd ci-client && npm start
 
-Если у вас винда, допишите в package.json в скрипт запуска set перед портом.
-```
-"set PORT=3001 && react-scripts start"
-```
+Если у вас винда, то работать не будет.
+
