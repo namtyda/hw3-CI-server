@@ -56,7 +56,7 @@ module.exports.getBuilds = async (req, res) => {
 module.exports.getBuildId = async (req, res) => {
   const { params } = req;
   const { buildId } = params;
-  
+
 
   if (buildId === undefined) {
     return res.status(400).send('build paramas not defined');
@@ -170,7 +170,7 @@ module.exports.postSettings = async (req, res) => {
     return res.status(500).send('bad request or server down');
   }
   stopWatcher();
-  await gitClone(store.userName, store.repoName);
+  await gitClone(store.userName, store.repoName, store.mainBranch);
   const list = await getCommitInfo(store.repoName, store.mainBranch, false, true);
   await compareCommit(list, store.mainBranch, store.first);
   watcher(store.period, store.repoName, store.userName, store.mainBranch);

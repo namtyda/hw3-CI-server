@@ -1,29 +1,44 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const { fileExistsAsync } = require('../utils/promisified');
+const { fileExistsAsync, execAsync } = require('../utils/promisified');
+
+
 const axios = require('../utils/axios-inst');
 const store = {
   lastCommitHash: ''
 };
 
-async function gitClone(userName, repoName) {
-  if (!await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
-    return new Promise((res, rej) => {
-      const git = spawn("git", ["clone", `https://github.com/${userName}/${repoName}.git`]);
-      git.stderr.on('data', err => {
-        console.log(err.toString('UTF-8'));
-      });
+async function removeRep(path) {
+  return new Promise( async(resolve, reject) => {
+    try {
+      await execAsync(`rm -rf ${path}`);
+      resolve('deleted');
+    } catch (err) {
+      reject(err)
+    }
 
-      git.on('close', async code => {
-        console.log(`Это код завершения процесса клона репы ${code}`);
-        if (code === 0) {
-          res()
-        }
-        rej();
-      });
-    });
+  });
+}
+
+async function gitClone(userName, repoName, branchName) {
+  if (await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
+    await removeRep(path.resolve(__dirname, '../', repoName));
   }
+  return new Promise((res, rej) => {
+    const git = spawn("git", ["clone", '-b', branchName, `https://github.com/${userName}/${repoName}.git`]);
+    git.stderr.on('data', err => {
+      console.log(err.toString('UTF-8'));
+    });
+
+    git.on('close', async code => {
+      console.log(`Это код завершения процесса клона репы ${code}`);
+      if (code === 0) {
+        res()
+      }
+      rej();
+    });
+  });
 }
 
 async function gitPull(userName, repoName) {
@@ -48,7 +63,7 @@ async function getCommitInfo(repoName, branchName, all = false, switchRepo = fal
     let buff = Buffer.alloc(0);
     let result;
     return new Promise((resolve, rej) => {
-      const git = spawn('git', ['log', '--pretty=format:{"commitHash":"%H", "authorName":"%cn", "commitMessage":"%s"}', hashLast, branchName], { cwd: path.join(__dirname, '../', repoName) });
+      const git = spawn('git', ['log', '--pretty=format:{"commitHash":"%H", "authorName":"%cn", "commitMessage":"%s"}', hashLast], { cwd: path.join(__dirname, '../', repoName) });
 
 
       git.stderr.on('data', err => {
@@ -85,7 +100,7 @@ function watcher(interval, repoName, userName, branchName) {
       const logCommit = await getCommitInfo(repoName, branchName);
       return compareCommit(logCommit, branchName);
     }
-    gitClone(userName, repoName);
+    gitClone(userName, repoName, branchName);
     const logCommit = await getCommitInfo(repoName, branchName);
     compareCommit(logCommit, branchName);
   }, intervalMs);
