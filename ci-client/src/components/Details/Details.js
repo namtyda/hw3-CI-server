@@ -41,7 +41,8 @@ function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo,
               commitHash={commitHash} branchName={branchName} authorName={authorName} status={status} start={start} duration={duration} />
             {logs &&
               <div className="details__log">
-                <pre>{convert.toHtml(logs)}</pre>
+
+                <pre dangerouslySetInnerHTML={{ __html: convert.toHtml(logs) }}></pre>
               </div>
             }
           </div>
