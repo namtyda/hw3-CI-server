@@ -2,7 +2,7 @@ import ax from 'axios';
 
 const axios = ax.create({
   baseURL: 'http://localhost:3000/api',
-  timeout: 5000,
+  timeout: 10000,
 });
 
 export const api = {
@@ -30,10 +30,13 @@ export const api = {
 
   postAddQueue(data) {
     return axios.post(`/builds/${data.commitHash}`, {
-      commitMessage: data.commitMessage,
-      branchName: data.branchName,
-      authorName: data.authorName
-    })
+      timeout: 200000
+    },
+      {
+        commitMessage: data.commitMessage,
+        branchName: data.branchName,
+        authorName: data.authorName
+      })
       .then(res => res)
       .catch(err => err);
   },
