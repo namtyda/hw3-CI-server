@@ -14,7 +14,7 @@ const initialState = {
   repoName: '',
   buildCommand: 'npm ci && npm run build',
   mainBranch: 'master',
-  period: ''
+  period: '1'
 }
 function Settings({ history, postSaveSettings, isCloning, cloningWithError }) {
   const [formValues, setFormValues] = useState(initialState);

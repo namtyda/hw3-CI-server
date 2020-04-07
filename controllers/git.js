@@ -90,7 +90,7 @@ async function getCommitInfo(repoName, branchName, all = false, switchRepo = fal
 }
 
 function watcher(interval, repoName, userName, branchName) {
-  const intervalMs = interval * 60 * 1000; //msecond
+  const intervalMs = (interval || 1) * 60 * 1000; //msecond
   store.fsWatch = fs.watchFile(path.resolve(__dirname, '../', 'clonesRepo', repoName), file => {
     console.log(repoName, '<=== in this repo, files changed');
   });
