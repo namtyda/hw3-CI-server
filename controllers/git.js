@@ -1,34 +1,50 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const { fileExistsAsync } = require('../utils/promisified');
+const { fileExistsAsync, execAsync } = require('../utils/promisified');
+
+
 const axios = require('../utils/axios-inst');
 const store = {
   lastCommitHash: ''
 };
 
-async function gitClone(userName, repoName) {
-  if (!await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
-    return new Promise((res, rej) => {
-      const git = spawn("git", ["clone", `https://github.com/${userName}/${repoName}.git`]);
-      git.stderr.on('data', err => {
-        console.log(err.toString('UTF-8'));
-      });
+async function removeRep(path) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await execAsync(`rm -rf ${path}`);
+      console.log('deted')
+      resolve('deleted');
+    } catch (err) {
+      reject(err)
+    }
 
-      git.on('close', async code => {
-        console.log(`Это код завершения процесса клона репы ${code}`);
-        if (code === 0) {
-          res()
-        }
-        rej();
-      });
-    });
-  }
+  });
 }
 
-async function gitPull(userName, repoName) {
-  if (await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
-    const pull = spawn("git", ["pull", `https://github.com/${userName}/${repoName}.git`], { cwd: path.join(__dirname, '../', repoName) });
+async function gitClone(userName, repoName, branchName) {
+  if (await fileExistsAsync(path.resolve(__dirname, '../', 'clonesRepo', repoName))) {
+    await removeRep(path.resolve(__dirname, '../', 'clonesRepo', repoName));
+  }
+  return new Promise((res, rej) => {
+    const git = spawn("git", ["clone", '-b', branchName, `https://github.com/${userName}/${repoName}.git`], { cwd: path.join(__dirname, '../', 'clonesRepo') });
+    git.stderr.on('data', err => {
+      console.log(err.toString('UTF-8'));
+    });
+
+    git.on('close', async code => {
+      console.log(`Это код завершения процесса клона репы ${code}`);
+      if (code === 0) {
+        res()
+      }
+      rej();
+    });
+  });
+}
+
+async function gitPull(userName, repoName, branchName) {
+  if (await fileExistsAsync(path.resolve(__dirname, '../', 'clonesRepo', repoName))) {
+    const pull = spawn("git", ["pull", `https://github.com/${userName}/${repoName}.git`, branchName], { cwd: path.join(__dirname, '../', 'clonesRepo', repoName) });
 
     pull.stderr.on('data', err => {
       console.log(err.toString('UTF-8'));
@@ -39,14 +55,16 @@ async function gitPull(userName, repoName) {
     });
   }
 }
-async function getCommitInfo(repoName, branchName) {
-  if (await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
+async function getCommitInfo(repoName, branchName, all = false, switchRepo = false) {
+  switchRepo ? store.lastCommitHash = '' : store.lastCommitHash
 
-    let hashLast = store.lastCommitHash.length > 0 ? store.lastCommitHash + '...HEAD' : '--no-decorate';
+
+  if (await fileExistsAsync(path.resolve(__dirname, '../', 'clonesRepo', repoName))) {
+    let hashLast = store.lastCommitHash.length > 0 && !all ? store.lastCommitHash + '...HEAD' : '--no-decorate';
     let buff = Buffer.alloc(0);
     let result;
     return new Promise((resolve, rej) => {
-      const git = spawn('git', ['log', '--pretty=format:{"commitHash":"%H", "authorName":"%cn", "commitMessage":"%s"}', hashLast, branchName], { cwd: path.join(__dirname, '../', repoName) });
+      const git = spawn('git', ['log', '--pretty=format:{"commitHash":"%H", "authorName":"%cn", "commitMessage":"%s"}', hashLast], { cwd: path.join(__dirname, '../', 'clonesRepo', repoName) });
 
 
       git.stderr.on('data', err => {
@@ -72,20 +90,21 @@ async function getCommitInfo(repoName, branchName) {
 }
 
 function watcher(interval, repoName, userName, branchName) {
-  store.fsWatch = fs.watchFile(path.resolve(__dirname, '../', repoName), file => {
+  const intervalMs = (interval || 1) * 60 * 1000; //msecond
+  store.fsWatch = fs.watchFile(path.resolve(__dirname, '../', 'clonesRepo', repoName), file => {
     console.log(repoName, '<=== in this repo, files changed');
   });
   store.intervalWatchId = setInterval(async () => {
-    console.log('lol interval', interval);
-    if (await fileExistsAsync(path.resolve(__dirname, '../', repoName))) {
-      await gitPull(userName, repoName);
+    console.log('lol interval', intervalMs, 'msecond');
+    if (await fileExistsAsync(path.resolve(__dirname, '../', 'clonesRepo', repoName))) {
+      await gitPull(userName, repoName, branchName);
       const logCommit = await getCommitInfo(repoName, branchName);
       return compareCommit(logCommit, branchName);
     }
-    gitClone(userName, repoName);
+    gitClone(userName, repoName, branchName);
     const logCommit = await getCommitInfo(repoName, branchName);
     compareCommit(logCommit, branchName);
-  }, interval);
+  }, intervalMs);
 }
 
 function stopWatcher() {

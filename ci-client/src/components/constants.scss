@@ -1,0 +1,72 @@
+$max-width-content: 824px;
+
+$space-xxxxs: 6px;
+$space-xxxs: 8px;
+$space-xxs: 10px;
+$space-xs: 12px;
+$space-s: 13px;
+$space-m: 16px;
+$space-l: 18px;
+$space-xl:20px;
+$space-xxl: 22px;
+$space-xxxl: 24px;
+$space-xxxxl: 30px;
+$space-xxxxxl: 32px;
+
+
+$font-size-s: 8px;
+$font-size-m: 10px;
+$font-size-l: 13px;
+$font-size-xl: 15px;
+$font-size-xxl: 16px;
+$font-size-xxxl: 18px;
+$font-size-xxxxl: 24px;
+
+
+$line-height-xs: 15px;
+$line-height-s: 16px;
+$line-height-m: 18px;
+$line-height-l: 20px;
+$line-height-xl: 22px;
+$line-height-xxl: 28px;
+$line-height-xxxl: 30px;
+$line-height-xxxxl: 36px;
+
+
+//  button var
+$default-button-background-color: #E6E6E6;
+$default-button-hover-background-color: #DBDBDB;
+$default-button-focus-color:#B3B3B3;
+$accent-button-background-color: #FFCC00;
+$accent-hover-button-background-color: #F2C200;
+$accent-focus-button-color: #B38F00;
+$default-border-radius: 4px;
+
+
+// title var
+$default-title-color:#7F8285;
+$default-title-fontWeight: 500;
+$hover-title-color: #DBDBDB;
+
+
+// text var
+$primary-text-color: #000;
+$secondary-text-color:#7F8285;
+$default-fontFamily: "YS Text";
+$details-log-fontFamily: 'Hack';
+$hover-color-link:#E00000;
+$sup-text-color: #FF3333;
+$good-pr-color: #00B341;
+$reject-pr-color: #FF3333;
+$queue-pr-color: #FF9A00;
+$history-commit-color: #595959;
+$log-background-color: #f2f2f2;
+
+// footer
+$primary-background-color-footer: #F0F2F3;
+
+// field
+$default-field-color-border: #D9D9D9;
+$focus-field-color: #B3B3B3;
+$field-margin-vertical: 6px;
+$field-error-color: #fc033d;

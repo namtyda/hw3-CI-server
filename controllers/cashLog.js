@@ -4,7 +4,7 @@ const { getStatAsync, fileExistsAsync, mkDirAsync } = require('../utils/promisif
 
 const store = {
   path: join(__dirname, '../', '/logs'),
-  cacheTime: 1 // minute
+  cacheTime: 5 // minute
 };
 // Проверяем есть ли лог, и не вышло ли время жизни
 async function checkLog(buildId) {

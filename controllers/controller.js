@@ -1,8 +1,7 @@
 const { gitClone, compareCommit, getCommitInfo, stopWatcher, watcher } = require('./git');
 const { writeLog, readLog, checkLog } = require('./cashLog');
 const axios = require('../utils/axios-inst');
-
-const store = {}
+const store = { first: true }
 
 // Получаю настройки
 module.exports.getSettings = async (_, res) => {
@@ -17,43 +16,47 @@ module.exports.getSettings = async (_, res) => {
   if (status !== 200) {
     return res.status(500).send('bad request');
   }
+  if ('data' in data) {
+    return res.send({
+      id: data.data.id,
+      repoName: data.data.repoName,
+      buildCommand: data.data.buildCommand,
+      mainBranch: data.data.mainBranch,
+      period: data.data.period
+    });
+  }
+  res.status(204).send('no content');
 
-  res.send({
-    id: data.data.id,
-    repoName: data.data.repoName,
-    buildCommand: data.data.buildCommand,
-    mainBranch: data.data.mainBranch,
-    period: data.data.period
-  });
 }
 
 // Получаю массив со списком билдов
 module.exports.getBuilds = async (req, res) => {
-  const { params } = req;
+  const { query } = req;
   let responseBuilds;
 
   try {
     responseBuilds = await axios.get('/build/list', {
       params: {
-        offset: params.offset || 0,
-        limit: params.limit || 25
+        offset: query.offset || 0,
+        limit: query.limit || 25
       }
     });
   } catch (err) {
-    return res.status(500).send(err)
+    return res.status(500).send(err.toString())
   }
   const { data, status } = responseBuilds;
 
   if (status !== 200) {
     return res.status(500).send('Cant get build list from server');
   }
-  res.send(data.data);
+  res.status(200).send(data.data);
 }
 
 // Получаю инфу о билде по buildId 
 module.exports.getBuildId = async (req, res) => {
   const { params } = req;
   const { buildId } = params;
+
 
   if (buildId === undefined) {
     return res.status(400).send('build paramas not defined');
@@ -67,14 +70,14 @@ module.exports.getBuildId = async (req, res) => {
     });
 
   } catch (err) {
-    return res.status(500).send(err);
+    return res.status(500).send('error on request server');
   }
   const { data, status } = responseBuildId;
 
   if (status !== 200) {
     return res.status(500)
   }
-  res.send(data.data);
+  res.status(200).send(data.data);
 }
 
 // Получение логов билда по buildId
@@ -101,7 +104,7 @@ module.exports.getLogs = async (req, res) => {
       responseType: 'stream'
     });
 
-    const {data} = responseLogs;
+    const { data } = responseLogs;
     await writeLog(buildId, data);
     await readLog(buildId, res);
 
@@ -112,30 +115,33 @@ module.exports.getLogs = async (req, res) => {
 
 // Добавление в очередь 
 module.exports.postAddInstQueue = async (req, res) => {
+  const allCommits = await getCommitInfo(store.repoName, store.mainBranch, all = true);
+
   const { params, body } = req;
   const { commitHash } = params;
 
   if (commitHash === undefined) {
     return res.status(400).send('Commit hash in params not valid')
   }
+  const searchedCommits = allCommits.find(data => data.commitHash === commitHash);
   let responseQueue;
   try {
     responseQueue = await axios.post('/build/request', {
-      commitMessage: body.commitMessage,
+      commitMessage: searchedCommits.commitMessage,
       commitHash,
-      branchName: body.branchName,
-      authorName: body.authorName
+      branchName: store.mainBranch,
+      authorName: searchedCommits.authorName
     });
 
   } catch (err) {
     return res.status(500).send(err);
   }
 
-  const { status } = responseQueue;
+  const { status, data } = responseQueue;
   if (status !== 200) {
     return res.status(500).send('cant add build to queue');
   }
-  res.status(200).send('ok');
+  res.status(200).send(data.data);
 }
 
 // Сохранение настроек
@@ -146,6 +152,7 @@ module.exports.postSettings = async (req, res) => {
   store.buildCommand = body.buildCommand;
   store.mainBranch = body.mainBranch;
   store.period = body.period;
+  console.log(body)
   let responseSettings;
   try {
     responseSettings = await axios.post('/conf', {
@@ -156,17 +163,17 @@ module.exports.postSettings = async (req, res) => {
     });
 
   } catch (err) {
-    return res.status(500).send(err);
+    return res.status(500).send(err.toString());
   }
   const { status } = responseSettings;
   if (status !== 200) {
     return res.status(500).send('bad request or server down');
   }
   stopWatcher();
-  await gitClone(store.userName, store.repoName);
-  const list = await getCommitInfo(store.repoName, store.mainBranch);
-
-  await compareCommit(list, store.mainBranch, true);
+  await gitClone(store.userName, store.repoName, store.mainBranch);
+  const list = await getCommitInfo(store.repoName, store.mainBranch, false, true);
+  await compareCommit(list, store.mainBranch, store.first);
   watcher(store.period, store.repoName, store.userName, store.mainBranch);
+
   res.status(200).send('ok');
 }

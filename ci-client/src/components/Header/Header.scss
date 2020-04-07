@@ -1,0 +1,83 @@
+@import '../constants.scss';
+@import '../mixins.scss';
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &_settings {
+    margin-bottom: $space-l;
+  }
+  &_details {
+    &:hover {
+      cursor: pointer;
+      opacity: 0.6;
+    }
+  }  
+
+  &__title {
+    margin: 0;
+    font-style: normal;
+    font-weight: $default-title-fontWeight;
+    font-size: $font-size-xxxxl;
+    line-height: $line-height-xxl;
+    color: $default-title-color;
+    
+    & a { 
+      color: $default-title-color;
+      text-decoration: none;
+    }
+    @media screen and (max-width: 420px) {
+      font-size: $font-size-xxxl;
+      line-height: $line-height-xl;
+    }
+    
+    &_history {
+      color: $primary-text-color;
+      max-width: 350px;
+      line-height: $line-height-xxxl;
+      @media screen and (max-width: 500px) {
+        font-size: $font-size-xxxl;
+      }
+      & a {
+        color: $primary-text-color;
+      }
+      &:hover a {
+        color: $hover-title-color
+      }
+    }
+  }
+  
+  &__settings-title a {
+    &:hover {
+      color: $hover-title-color;
+    }
+  }
+  &__button {
+    padding: 0;
+    display: flex;
+    line-height: $line-height-xxl;
+    
+    &_history {
+      margin-left: 8px;
+    }
+  }
+
+  &__content {
+    margin-bottom: 215px; // Мне стыдно ((((
+
+    
+    @media screen and (max-width: 420px) {
+      margin-bottom: 109px; // И тут тоже ((, и много еще где ((
+    }
+  }
+
+  &__history-indent {
+    margin-bottom: $space-l;
+  }
+
+  &__button-wrapper {
+    display: flex;
+  }
+}

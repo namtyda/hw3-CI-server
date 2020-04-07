@@ -1,0 +1,9 @@
+@import '../constants.scss';
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - #{$space-xxs});
+  padding: $space-xxs 0 0 0;
+  font-family: $default-fontFamily;
+}

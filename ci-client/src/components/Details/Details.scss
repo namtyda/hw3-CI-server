@@ -1,0 +1,39 @@
+@import '../constants.scss';
+.details {
+  flex-grow: 1;
+  position: relative;
+  &__card {
+    flex-direction: column;
+  }
+
+  &__date {
+    flex-direction: row;
+    border-top: 1px solid  $primary-background-color-footer;
+    padding-top: $space-xxxs;
+  }
+  
+  &__day-container {
+    margin-bottom: 0;
+  }
+  
+  &__atributes {
+    margin-bottom: $space-xxxs;
+  }
+  
+  &__day {
+    margin-right: $space-xxs;
+  }
+
+  &__log {
+    padding: $space-xxxs $space-xs;
+    background-color: $log-background-color;
+    font-family: $details-log-fontFamily;
+    font-style: normal;
+    font-weight: normal;
+    font-size: $font-size-m;
+    flex-grow: 1;
+    line-height: $line-height-l;
+    overflow-x: auto;
+    margin-bottom: $space-xl;
+  }
+}

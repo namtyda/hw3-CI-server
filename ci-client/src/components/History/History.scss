@@ -1,0 +1,16 @@
+@import '../constants.scss';
+
+.history {
+  overflow-anchor: none;
+  position: relative;
+  flex-grow: 1;
+  &__button {
+    margin-top: $space-xxxs;
+    margin-bottom: $space-m;
+    padding: 0 $space-s;
+    
+    @media screen and (max-width: 650px) {
+      width: 100%;
+    }
+  }
+}

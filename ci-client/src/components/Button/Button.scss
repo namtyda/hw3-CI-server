@@ -1,0 +1,72 @@
+@import '../constants.scss';
+@import '../mixins.scss';
+
+.button {
+  @include text-button;
+  padding: 0 $space-xl;
+  line-height: $line-height-xxxxl;
+  border-radius: $default-border-radius;
+  border: none;
+  background-color: $default-button-background-color;
+  
+  &__icon {
+    padding: $space-xxxs;
+    width: 12px;
+    height: 12px;
+  }
+
+  &__text {
+    @include text-button;
+    line-height: $line-height-xxl;
+    padding-right: $font-size-l;
+
+    @media screen and (max-width: 420px) {
+      display: none;
+    }
+  }
+
+  &:hover {
+    background-color: $default-button-hover-background-color;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow:
+    0 0 0 2px $default-button-focus-color,
+    0 0 0 2px $default-button-focus-color;
+  }
+
+  &:disabled {
+    background-color: #F2F2F2;
+    color: #7F7F7F;
+    opacity: .5;
+  }
+  &_accent {
+    background-color: $accent-button-background-color;
+
+    &:hover {
+      background-color: $accent-hover-button-background-color;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow:
+    0 0 0 2px $accent-focus-button-color,
+    0 0 0 2px $accent-focus-button-color;
+    }
+  }
+
+  &__header {
+    padding: 0;
+    display: flex;
+    line-height: $line-height-xxl;
+  }
+
+  &__settings {
+    margin-right: $space-xxxs;
+    @media screen and (max-width: 420px) {
+      margin-right: 0;
+      margin-bottom: $space-xxxs;
+    }
+  }
+}

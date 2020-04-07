@@ -1,0 +1,13 @@
+@import './components/fonts.scss';
+@import './components/constants.scss';
+
+.content {
+  margin: 0 auto;
+  max-width: $max-width-content;
+  padding: 0 $space-m;
+}
+
+body {
+  margin: 0;
+  
+}

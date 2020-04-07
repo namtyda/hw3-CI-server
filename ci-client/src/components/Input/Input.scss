@@ -1,0 +1,80 @@
+@import '../constants.scss';
+@import '../mixins.scss';
+
+.input {
+  display: flex;
+    max-width: 474px;
+    align-items: center;
+    border: 2px solid $default-field-color-border;
+    border-radius: $default-border-radius;
+    
+    &:last-child {
+      margin-bottom: $space-xl;
+    }
+    &:focus-within {
+      border: 2px solid $focus-field-color;
+      
+    }
+
+    &:not(:last-child) {
+      margin-bottom: $space-m;
+    }
+
+  &__field {
+    width: 100%;
+    padding: $space-xxxs $space-s;
+    border: none;
+    flex-grow: 1;
+    
+    @include secondary-text-style;
+    line-height: $line-height-xs;
+    
+    &_time {
+      max-width: 20px;
+      padding-left: 15px;
+      margin: 0 $space-xxxs;
+      border: 2px solid $default-field-color-border;
+      border-radius: $default-border-radius;
+
+      &:focus {
+        box-shadow:
+        0 0 0 1px $focus-field-color,
+        0 0 0 1px $focus-field-color;
+      }
+    }
+
+    &:focus{
+     outline: none;
+    }
+    
+    &::placeholder {
+      font-size: $font-size-l;
+      line-height: $line-height-xs;
+    }
+
+    &:not(:placeholder-shown) + .input__field-cancel {
+      display: block;
+    }
+  }
+
+  &__field-cancel {
+    display: none;
+    background-image: url('/images/reset.svg');
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+    margin-right: $space-xxs;
+    border: none;
+    background-color: transparent;
+
+    &:focus {
+      outline: 2px solid $focus-field-color;
+    }
+  }
+  &__error {
+    border: 2px solid $field-error-color;
+    &:focus-within {
+      border: 2px solid $field-error-color;
+    }
+  }
+}
