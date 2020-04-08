@@ -17,7 +17,7 @@ module.exports.getSettings = async (_, res) => {
     return res.status(500).send('bad request');
   }
   if ('data' in data) {
-    return res.send({
+    return res.status(200).send({
       id: data.data.id,
       repoName: data.data.repoName,
       buildCommand: data.data.buildCommand,
