@@ -13,7 +13,6 @@ async function removeRep(path) {
   return new Promise(async (resolve, reject) => {
     try {
       await execAsync(`rm -rf ${path}`);
-      console.log('deted')
       resolve('deleted');
     } catch (err) {
       reject(err)
@@ -186,4 +185,4 @@ async function compareCommit(commitInfo = [], branchName, isFirst = false) {
     });
   }
 }
-module.exports = { gitClone, gitPull, getCommitInfo, compareCommit, getBuildList, stopWatcher, watcher, cloneRepo, pull, commitInfo }
+module.exports = { gitClone, gitPull, getCommitInfo, compareCommit, getBuildList, stopWatcher, watcher, cloneRepo, pull, commitInfo, removeRep }

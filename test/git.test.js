@@ -4,8 +4,9 @@ const child = require('child_process');
 const { stub } = require('sinon');
 const { expect } = require('chai');
 const { join } = require('path');
+const { fileExistsAsync, mkDirAsync } = require('../utils/promisified');
 
-const { cloneRepo, pull, commitInfo } = require('../controllers/git');
+const { cloneRepo, pull, commitInfo, removeRep } = require('../controllers/git');
 
 describe('Проверка передачи аргументов в spawn', () => {
 
@@ -77,3 +78,13 @@ describe('Проверка передачи аргументов в spawn', () =
 
 });
 
+describe('removeRep', () => {
+  beforeEach(async () => {
+    await mkDirAsync(join(__dirname, 'ref'), { recursive: true });
+  });
+
+  it('Функция removeRep, корректно удаляет директорию', async () => {
+    await removeRep(join(__dirname, '../', 'test', 'ref'));
+    expect(false).to.be.equal(await fileExistsAsync(join(__dirname, 'ref')));
+  });
+});
