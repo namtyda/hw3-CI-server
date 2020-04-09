@@ -3,6 +3,8 @@ const { writeLog, readLog, checkLog } = require('./cashLog');
 const axios = require('../utils/axios-inst');
 const store = { first: true }
 
+
+
 // Получаю настройки
 module.exports.getSettings = async (_, res) => {
   let responseGetSettings;
@@ -11,6 +13,7 @@ module.exports.getSettings = async (_, res) => {
   } catch (err) {
     res.status(500).send(err);
   }
+  // console.log(responseGetSettings)
   const { data, status } = responseGetSettings;
 
   if (status !== 200) {
@@ -82,6 +85,7 @@ module.exports.getBuildId = async (req, res) => {
 
 // Получение логов билда по buildId
 module.exports.getLogs = async (req, res) => {
+  // Не покрыто юнит тестами, покрыто интеграционными
   const { params } = req;
   const { buildId } = params;
 
@@ -115,8 +119,8 @@ module.exports.getLogs = async (req, res) => {
 
 // Добавление в очередь 
 module.exports.postAddInstQueue = async (req, res) => {
+  // Не покрыто юнит тестами, покрыто интеграционными
   const allCommits = await getCommitInfo(store.repoName, store.mainBranch, all = true);
-
   const { params, body } = req;
   const { commitHash } = params;
 
@@ -146,8 +150,8 @@ module.exports.postAddInstQueue = async (req, res) => {
 
 // Сохранение настроек
 module.exports.postSettings = async (req, res) => {
+  // Не покрыто юнит тестами, покрыто интеграционными
   const { body } = req;
-
   [store.userName, store.repoName] = body.repoName.split('/');
   store.buildCommand = body.buildCommand;
   store.mainBranch = body.mainBranch;
