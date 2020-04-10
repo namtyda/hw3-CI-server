@@ -11,9 +11,8 @@ module.exports.getSettings = async (_, res) => {
   try {
     responseGetSettings = await axios.get('/conf');
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send(err.toString());
   }
-  // console.log(responseGetSettings)
   const { data, status } = responseGetSettings;
 
   if (status !== 200) {
@@ -36,7 +35,6 @@ module.exports.getSettings = async (_, res) => {
 module.exports.getBuilds = async (req, res) => {
   const { query } = req;
   let responseBuilds;
-
   try {
     responseBuilds = await axios.get('/build/list', {
       params: {
@@ -85,7 +83,6 @@ module.exports.getBuildId = async (req, res) => {
 
 // Получение логов билда по buildId
 module.exports.getLogs = async (req, res) => {
-  // Не покрыто юнит тестами, покрыто интеграционными
   const { params } = req;
   const { buildId } = params;
 
@@ -119,7 +116,6 @@ module.exports.getLogs = async (req, res) => {
 
 // Добавление в очередь 
 module.exports.postAddInstQueue = async (req, res) => {
-  // Не покрыто юнит тестами, покрыто интеграционными
   const allCommits = await getCommitInfo(store.repoName, store.mainBranch, all = true);
   const { params, body } = req;
   const { commitHash } = params;
@@ -150,7 +146,6 @@ module.exports.postAddInstQueue = async (req, res) => {
 
 // Сохранение настроек
 module.exports.postSettings = async (req, res) => {
-  // Не покрыто юнит тестами, покрыто интеграционными
   const { body } = req;
   [store.userName, store.repoName] = body.repoName.split('/');
   store.buildCommand = body.buildCommand;

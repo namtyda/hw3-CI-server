@@ -1,3 +1,4 @@
+require('dotenv').config();
 const child = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -24,8 +25,8 @@ async function gitClone(userName, repoName, branchName) {
   if (await fileExistsAsync(path.resolve(__dirname, '../', 'clonesRepo', repoName))) {
     await removeRep(path.resolve(__dirname, '../', 'clonesRepo', repoName));
   }
-  await cloneRepo(userName, repoName, branchName);
-  return Promise.resolve();
+  const res = await cloneRepo(userName, repoName, branchName);
+  return Promise.resolve(res);
 }
 
 async function cloneRepo(userName, repoName, branchName) {
@@ -42,11 +43,12 @@ async function cloneRepo(userName, repoName, branchName) {
   });
 }
 
- async function gitPull(userName, repoName, branchName) {
+async function gitPull(userName, repoName, branchName) {
   if (await fileExistsAsync(path.resolve(__dirname, '../', 'clonesRepo', repoName))) {
-    await pull(userName, repoName, branchName);
+    const res = await pull(userName, repoName, branchName);
+    return res;
   }
- }
+}
 
 function pull(userName, repoName, branchName) {
   return new Promise((res, rej) => {
@@ -70,33 +72,33 @@ async function getCommitInfo(repoName, branchName, all = false, switchRepo = fal
 }
 
 async function commitInfo(repoName, branchName, all = false, switchRepo = false) {
-    switchRepo ? store.lastCommitHash = '' : store.lastCommitHash
-    let hashLast = store.lastCommitHash.length > 0 && !all ? store.lastCommitHash + '...HEAD' : '--no-decorate';
-    let buff = Buffer.alloc(0);
-    let result;
-    return new Promise((resolve, rej) => {
-      const git = child.spawn('git', ['log', '--pretty=format:{"commitHash":"%H", "authorName":"%cn", "commitMessage":"%s"}', hashLast], { cwd: path.join(__dirname, '../', 'clonesRepo', repoName) });
+  switchRepo ? store.lastCommitHash = '' : store.lastCommitHash
+  let hashLast = store.lastCommitHash.length > 0 && !all ? store.lastCommitHash + '...HEAD' : '--no-decorate';
+  let buff = Buffer.alloc(0);
+  let result;
+  return new Promise((resolve, rej) => {
+    const git = child.spawn('git', ['log', '--pretty=format:{"commitHash":"%H", "authorName":"%cn", "commitMessage":"%s"}', hashLast], { cwd: path.join(__dirname, '../', 'clonesRepo', repoName) });
 
 
-      git.stderr.on('data', err => {
-        console.log(err.toString('UTF-8'));
-      });
-
-      git.stdout.on('data', data => {
-        buff = Buffer.concat([buff, data])
-      });
-
-      git.on('close', code => {
-        console.log(`Это код завершения процесса получения инфы по коммитам ${code}`);
-        const str = buff.toString();
-        if (str) {
-          result = str.split('\n').map((el, i) => JSON.parse(el));
-          store.lastCommitHash = result[0].commitHash;
-          resolve(result);
-        }
-        resolve([]);
-      });
+    git.stderr.on('data', err => {
+      console.log(err.toString('UTF-8'));
     });
+
+    git.stdout.on('data', data => {
+      buff = Buffer.concat([buff, data])
+    });
+
+    git.on('close', code => {
+      console.log(`Это код завершения процесса получения инфы по коммитам ${code}`);
+      const str = buff.toString();
+      if (str) {
+        result = str.split('\n').map((el, i) => JSON.parse(el));
+        store.lastCommitHash = result[0].commitHash;
+        resolve(result);
+      }
+      resolve([]);
+    });
+  });
 }
 
 function watcher(interval, repoName, userName, branchName) {
@@ -127,25 +129,6 @@ function stopWatcher() {
   }
 }
 
-async function getBuildList() {
-  let responseBuilds;
-  try {
-    responseBuilds = await axios.get('/build/list', {
-      params: {
-        offset: 0,
-        limit: 25
-      }
-    });
-  } catch (err) {
-    console.log(`Ошибка в get запросе к апи за листом билдов ${err}`)
-  }
-  const { data, status } = responseBuilds;
-  if (status !== 200) {
-    return console.log(`get запрос листа билдов прилег с кодом ${status}`);
-  }
-  return data.data;
-}
-
 async function compareCommit(commitInfo = [], branchName, isFirst = false) {
   if (isFirst) {
     const { commitMessage, commitHash, authorName } = commitInfo[0];
@@ -157,9 +140,9 @@ async function compareCommit(commitInfo = [], branchName, isFirst = false) {
         branchName,
         authorName
       });
-
+      
     } catch (err) {
-      console.log(`Сервер овтетил ошибкой, на добавление в очередь ${err}`);
+      return err;
     }
     if (responseQueue) {
       const { status } = responseQueue;
@@ -167,6 +150,7 @@ async function compareCommit(commitInfo = [], branchName, isFirst = false) {
         return console.log(`Добавление в очередь упало со статусом ${status}`);
       }
       console.log(`Добавили в очередь, со статусом ${status}`);
+      return status;
     }
 
   } else if (!isFirst && commitInfo.length > 0) {
@@ -185,4 +169,4 @@ async function compareCommit(commitInfo = [], branchName, isFirst = false) {
     });
   }
 }
-module.exports = { gitClone, gitPull, getCommitInfo, compareCommit, getBuildList, stopWatcher, watcher, cloneRepo, pull, commitInfo, removeRep }
+module.exports = { gitClone, gitPull, getCommitInfo, compareCommit, stopWatcher, watcher, cloneRepo, pull, commitInfo, removeRep }
