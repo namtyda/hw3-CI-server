@@ -2,7 +2,6 @@
   "name": "ci-client",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -22,7 +21,8 @@
     "start": "PORT=3001 react-scripts start",
     "build": "react-scripts build && rm -rf ../static && mv build ../static",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "hermione": "./node_modules/.bin/hermione gui ./test/hermione/test.hermione.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -41,7 +41,10 @@
   },
   "devDependencies": {
     "classnames": "^2.2.6",
+    "hermione": "^3.1.0",
+    "html-reporter": "^5.15.2",
     "node-sass": "^4.13.1",
-    "react-router-dom": "^5.1.2"
+    "react-router-dom": "^5.1.2",
+    "selenium-standalone": "^6.17.0"
   }
 }
