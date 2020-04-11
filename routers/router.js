@@ -7,6 +7,7 @@ router.get('/settings', controller.getSettings);
 router.get('/builds', controller.getBuilds);
 router.get('/builds/:buildId', controller.getBuildId);
 router.get('/builds/:buildId/logs', controller.getLogs);
+router.get('/delete', controller.deleteSettings);
 
 router.post('/builds/:commitHash', controller.postAddInstQueue);
 router.post('/settings', controller.postSettings);

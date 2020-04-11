@@ -11,7 +11,6 @@ export const api = {
       .then(res => res)
       .catch(err => console.log(err));
   },
-
   getBuildsList(data) {
     return axios.get('/builds', {
       params: {
