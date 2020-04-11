@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { gitClone, compareCommit, getCommitInfo, stopWatcher, watcher } = require('./git');
 const { writeLog, readLog, checkLog } = require('./cashLog');
 const axios = require('../utils/axios-inst');
@@ -11,24 +12,26 @@ module.exports.getSettings = async (_, res) => {
   try {
     responseGetSettings = await axios.get('/conf');
   } catch (err) {
+    console.log(err);
     res.status(500).send(err.toString());
   }
-  const { data, status } = responseGetSettings;
+  if (responseGetSettings) {
+    const { data, status } = responseGetSettings;
 
-  if (status !== 200) {
-    return res.status(500).send('bad request');
+    if (status !== 200) {
+      return res.status(500).send('bad request');
+    }
+    if ('data' in data) {
+      return res.status(200).send({
+        id: data.data.id,
+        repoName: data.data.repoName,
+        buildCommand: data.data.buildCommand,
+        mainBranch: data.data.mainBranch,
+        period: data.data.period
+      });
+    }
+    res.status(204).send('no content');
   }
-  if ('data' in data) {
-    return res.status(200).send({
-      id: data.data.id,
-      repoName: data.data.repoName,
-      buildCommand: data.data.buildCommand,
-      mainBranch: data.data.mainBranch,
-      period: data.data.period
-    });
-  }
-  res.status(204).send('no content');
-
 }
 
 // Получаю массив со списком билдов
