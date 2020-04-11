@@ -1,6 +1,6 @@
 import { api } from '../api/api';
 
-const initialState = {
+export const initialState = {
   repoName: '',
   buildCommand: 'npm ci && npm run build',
   mainBranch: 'master',
@@ -25,22 +25,22 @@ export function settingsReducer(state = initialState, action) {
   }
 }
 
-const addConfig = (data) => ({
+export const addConfig = (data) => ({
   type: 'GET_CONFIG',
   payload: data
 });
 
-const loadSettings = (status) => ({
+export const loadSettings = (status) => ({
   type: 'LOAD',
   payload: status
 });
 
-const cloningRepo = (status) => ({
+export const cloningRepo = (status) => ({
   type: 'CLONING',
   payload: status
 });
 
-const errorWithCloning = (status) => ({
+export const errorWithCloning = (status) => ({
   type: 'ERROR_CLONING',
   payload: status
 });
