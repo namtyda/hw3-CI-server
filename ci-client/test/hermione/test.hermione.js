@@ -4,6 +4,33 @@ describe('Тесты отображение', () => {
     await apiDelete();
   });
 
+  it('Главная страница, без настроек, открывается', function () {
+    return this.browser
+      .url('/')
+      .assertExists('.settings-info', 'Главная страница похоже не открылась')
+      .assertView('mainPage', 'body')
+  });
+
+  it('Можно перейти с главной, на settings', function () {
+    return this.browser
+      .url('/')
+      .pause(500)
+      .click('.button_accent')
+      .pause(1000)
+      .assertExists('.settings__form', 'Форма с настройками появилась')
+      .assertView('settings', 'body')
+  });
+
+  it('Можно перейти с главной, на settings, кнопкой в header', function () {
+    return this.browser
+      .url('/')
+      .pause(500)
+      .click('.button__header')
+      .pause(1000)
+      .assertExists('.settings__form', 'Форма с настройками появилась')
+      .assertView('settingsfromHeaderBtn', 'body')
+  });
+
   it('Страница Settings открывается, и проходит тесты', function () {
     return this.browser
       .url('/settings')
@@ -60,7 +87,7 @@ describe('Тесты отображение', () => {
         ignoreElements: ['.card__number-ticket_queue']
       })
   });
-  
+
   it('Можно сделать rebuild на Details', function () {
     return this.browser
       .url('/settings')
@@ -79,4 +106,3 @@ describe('Тесты отображение', () => {
       })
   });
 });
-
