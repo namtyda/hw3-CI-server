@@ -21,6 +21,19 @@ describe('Тесты отображение', () => {
       .assertView('settings', 'body')
   });
 
+  it('Переход с history в settings', function () {
+    return this.browser
+      .url('/settings')
+      .click('#repoName')
+      .keys(['namtyda/reference'], '\uE007')
+      .pause(1000)
+      .click('.button__settings')
+      .pause(2000)
+      .click('.header__button_history')
+      .assertExists('.settings__form', 'Форма с настройками появилась')
+      .assertView('settingsFromHistory', 'body')
+  });
+
   it('Можно перейти с главной, на settings, кнопкой в header', function () {
     return this.browser
       .url('/')
