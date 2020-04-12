@@ -20,7 +20,7 @@
   "scripts": {
     "start": "PORT=3001 react-scripts start",
     "build": "react-scripts build && rm -rf ../static && mv build ../static",
-    "test": "react-scripts test",
+    "test": "react-scripts test --watchAll",
     "eject": "react-scripts eject",
     "hermione": "./node_modules/.bin/hermione gui ./test/hermione/test.hermione.js"
   },

@@ -22,13 +22,14 @@ describe('Интеграционные тесты git', () => {
   it('int: getCommitInfo возвращает массив с коммитами', async () => {
     const repoName = 'reference';
     const res = await getCommitInfo(repoName);
-    expect(res).to.be.eql([
+    expect(res[0]).to.be.eql(
       {
-        commitHash: '50edd056baf1d984a75b61acdef3f73050ffca49',
+        commitHash: 'd36019c43edf53686e07686fc8d5ed78978753ac',
         authorName: 'Andrey Pogorelov',
-        commitMessage: 'reference commit'
-      }
-    ])
+        commitMessage: 'reference commit for UI test'
+      },
+
+    )
   });
 
   it('int: compareCommit добавляет коммиты', async () => {
@@ -50,6 +51,6 @@ describe('Интеграционные тесты git', () => {
     const res = await compareCommit(data, 'master', true);
     expect(res).to.be.equal(200);
     expect(responseSettings.status).to.be.equal(200);
-    
+
   });
 });
