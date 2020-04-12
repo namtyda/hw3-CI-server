@@ -5,9 +5,10 @@ import { Button } from '../Button/Button';
 import { Footer } from '../Footer/Footer';
 import { Loader } from '../Loader/Loader';
 import { connect } from 'react-redux';
-import { getConfigThunk } from '../../redux/settingsReducer';
 import { withRouter } from 'react-router-dom';
-function Start({ getConfigThunk, history, settings }) {
+import { mapStateToProps, mapDispatchToProps } from './selectors';
+
+function Start({ getConfigThunk, history, isLoad }) {
   useEffect(() => getConfigThunk(history), [getConfigThunk, history]);
 
   const handleRedirectSettings = () => {
@@ -17,7 +18,7 @@ function Start({ getConfigThunk, history, settings }) {
     <>
       <div className='start'>
         <Header button title='School CI server' onClick={handleRedirectSettings} />
-        {settings.isLoad ? <Loader /> :
+        {isLoad ? <Loader /> :
           <div className='settings-info content'>
             <img className="settings-info__img" src="images/settingslogo.svg" alt="key and screw" />
             <p className="settings-info__text">
@@ -32,7 +33,5 @@ function Start({ getConfigThunk, history, settings }) {
     </>
   );
 }
-const mapStateToProps = ({ settings }) => ({
-  settings
-});
-export const StartConnect = withRouter(connect(mapStateToProps, { getConfigThunk })(Start))
+
+export const StartConnect = withRouter(connect(mapStateToProps, mapDispatchToProps)(Start))

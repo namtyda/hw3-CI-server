@@ -42,9 +42,11 @@
   "devDependencies": {
     "classnames": "^2.2.6",
     "hermione": "^3.1.0",
+    "history": "^4.10.1",
     "html-reporter": "^5.15.2",
     "node-sass": "^4.13.1",
     "react-router-dom": "^5.1.2",
+    "redux-mock-store": "^1.5.4",
     "selenium-standalone": "^6.17.0"
   }
 }
