@@ -8,6 +8,7 @@ module.exports = {
       },
     },
   },
+  retry: 3,
   plugins: {
     'html-reporter/hermione': {
       path: 'test/hermione/hermione-html-reporter',
