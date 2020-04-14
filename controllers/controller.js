@@ -34,22 +34,6 @@ module.exports.getSettings = async (_, res) => {
   }
 }
 
-module.exports.deleteSettings = async (_, res) => {
-  let response;
-  try {
-    response = await axios.delete('/conf');
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err.toString());
-  }
-  const { data, status } = response;
-
-  if (status !== 200) {
-    return res.status(500).send('Cant delete config');
-  }
-  res.status(200).send(data.data);
-
-}
 // Получаю массив со списком билдов
 module.exports.getBuilds = async (req, res) => {
   const { query } = req;
