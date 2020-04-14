@@ -1,5 +1,5 @@
 {
   "port": 3006,
-  "serverHost": "localhost",
+  "serverHost": "http://localhost",
   "serverPort": 3005
 }

@@ -1,11 +1,12 @@
 const config = require('./ server-conf.json');
 const express = require('express');
 const router = require('./routers/router');
-
+const controller = require('./controllers/controller');
 const app = express();
 app.use(express.json());
 app.use(router);
 
+controller.checkNewBuilds();
 
 app.use((req, res) => {
   res.status(404);
