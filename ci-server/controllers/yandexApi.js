@@ -36,6 +36,11 @@ class YandexApi {
     }).catch(err => console.log(err));
   };
 
+  getConfig = () => {
+    return this.webClient.get('/conf')
+      .catch(err => console.log(err));
+  };
+
 }
 
 const instance = new YandexApi(axios);
