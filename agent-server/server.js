@@ -1,12 +1,16 @@
 const config = require('./agent-conf.json');
 const express = require('express');
-
+const agent = require('./controllers/agent');
 const app = express();
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.status(200).send('ok');
-})
+app.post('/build', (req, res) => {
+  agent.build(req.body)
+    .then(data => agent.sendResultBuild(data));
+  res.status(202).send('add to build');
+  console.log('aadsda')
+});
+
 app.use((req, res) => {
   res.status(404);
 
@@ -22,11 +26,16 @@ app.use((req, res) => {
 }
 );
 
+
 const port = process.argv[2] || config.port;
 
 app.listen(port, err => {
   if (err) {
     console.log(err)
   }
+  agent.registry();
   console.log('listen port', port);
+
 });
+
+module.exports = app;

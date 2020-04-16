@@ -3,12 +3,13 @@ const tcp = require('tcp-ping');
 const axios = require('axios');
 
 class Controller {
-  agents = [{ host: 'localhost', port: 3006 }];
+  agents = [];
   interval;
   intervalPing;
+  intervalRequest;
   builds = [];
   config = {};
-  intervalTime = 30000; //msecond
+  intervalTime = 10000; //msecond
   intervalTimePing = 5000;//msecond
   intervalTimeWork = 5000;//msecond
 
@@ -22,21 +23,23 @@ class Controller {
     if (host === undefined || port === undefined) {
       return res.status(500).send('bad request');
     }
-    this.agents.push = body;
+    this.agents.push(body);
     res.status(200).send('ok');
+    console.log(this.agents)
   };
 
   sendResultBuild = (req, res) => {
+    const { body } = req;
     try {
-      const { body } = req;
       this.yandexApi.finishBuild(body)
     } catch (error) {
       console.log(error);
-      res.status(500).send('error')
+      return res.status(500).send('error');
     }
     this.agents.forEach(agent => {
       if (agent.port === body.port && agent.host === body.host) {
         agent.status = true;
+        delete (agent.buildId);
       }
     });
     res.status(200).send('ok');
@@ -46,28 +49,27 @@ class Controller {
     let response;
     try {
       response = await this.yandexApi.getBuildList();
-
+      this.builds = response.data.data
+      this.findNewBuilds();
     } catch (error) {
       console.log(error);
     }
-    this.builds = response.data.data
-    this.findNewBuilds();
   }
 
-  getConfig = async () => {
+  getConfig = async (tryCount = 0) => {
     let response;
-    let tryCount = 0;
     try {
       response = await this.yandexApi.getConfig();
+      this.config = { ...this.config, ...response.data.data }
     } catch (error) {
       console.log(error);
       if (tryCount < 4) {
-        response = await this.yandexApi.getConfig();
-        tryCount++;
+        setTimeout(() => {
+          return this.getConfig(tryCount + 1);
+        }, 5000)
       }
     }
 
-    this.config = { ...this.config, ...response.data.data }
   }
 
   findNewBuilds = () => {
@@ -113,23 +115,24 @@ class Controller {
   }
 
   prepare = async () => {
-    await checkNewBuilds();
-    await getConfig();
-    await pingAgents();
+    await this.checkNewBuilds();
+    await this.getConfig();
+    await this.pingAgents();
+
   }
 
   start = async () => {
-    prepare();
+    this.prepare();
     setInterval(async () => {
       if (this.builds.length !== 0 && this.agents.length !== 0) {
         this.agents.forEach(async agent => {
           if (agent.available) {
             const { host, port } = agent;
             const { id, commitHash } = this.builds.pop();
-            const { repoName, buildCommand } = this.config;
+            const { repoName, buildCommand, mainBranch } = this.config;
             let response;
             try {
-              console.log('Послал POST агенту');
+              console.log(`Послал POST агенту ${host}:${port}`);
               response = await axios.post(`http://${host}:${port}/build`, {
                 id,
                 commitHash,
@@ -140,10 +143,15 @@ class Controller {
             } catch (error) {
               console.log(error);
             }
+            console.log(response.status, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
             if (response.status === 202) {
-              сonsole.log('Получил ответ 202, все гуд билдим');
               agent.available = false;
               agent.buildId = id;
+              try {
+                await this.yandexApi.startBuild({ buildId: id, dateTime: new Date() });
+              } catch (error) {
+                console.log(error);
+              }
             }
           }
         });
@@ -153,6 +161,5 @@ class Controller {
   }
 }
 const instance = new Controller(yandexApi);
-
 
 module.exports = instance;

@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(router);
 
-controller.checkNewBuilds();
+
 
 app.use((req, res) => {
   res.status(404);
@@ -27,5 +27,6 @@ app.listen(config.port, err => {
   if (err) {
     console.log(err);
   }
+  controller.start();
   console.log('listen port', config.port);
 });

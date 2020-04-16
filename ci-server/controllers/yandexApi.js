@@ -21,10 +21,10 @@ class YandexApi {
     }).catch(err => console.log(err));
   };
 
-  finishBuild = ({ buildId, duration, success, buildLog }) => {
+  finishBuild = ({ buildId, duration, success, buildLog = "string" }) => {
     return this.webClient.post('/build/finish', {
       buildId,
-      duration,
+      duration: Number(duration),
       success,
       buildLog
     }).catch(err => console.log(err));
