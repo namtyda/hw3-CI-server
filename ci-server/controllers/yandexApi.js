@@ -1,7 +1,10 @@
 const axios = require('../utils/axios-instance');
-const axiosRetry = require('axios-retry');
+const rax = require('retry-axios');
 
-axiosRetry(axios, { retries: 3 });
+axios.defaults.raxConfig = {
+  instance: axios
+};
+const interceptorId = rax.attach(axios);
 class YandexApi {
 
   constructor(webClient) {

@@ -1,10 +1,9 @@
 const yandexApi = require('./yandexApi');
 const tcp = require('tcp-ping');
 const axios = require('axios');
-const axiosRetry = require('axios-retry');
+const rax = require('retry-axios');
 
-axiosRetry(axios, { retries: 3 });
-
+const interceptorId = rax.attach(axios);
 
 class Controller {
   agents = [];
@@ -23,28 +22,34 @@ class Controller {
 
   registerAgent = (req, res) => {
     const { body } = req;
-    const { host, port } = body;
-    if (host === undefined || port === undefined) {
+    const {port } = body;
+    if (req.hostname === undefined || port === undefined) {
       return res.status(500).send('bad request');
     }
-    if (this.agents.every(agent => agent.host !== body.host && agent.port !== body.port)) {
-      this.agents.push(body);
+    if (this.agents.every(agent => agent.port !== body.port)) {
+      this.agents.push({...body, host: req.hostname});
       res.status(200).send('ok');
       console.log(this.agents)
     }
   };
 
   sendResultBuild = (req, res) => {
+    let tryCount = 0;
     const { body } = req;
-    console.log(body)
+
     try {
       this.yandexApi.finishBuild(body)
     } catch (error) {
       console.log(error);
-      return res.status(500).send('error');
+      if (tryCount < 4) {
+        this.yandexApi.finishBuild(body)
+        tryCount += 1;
+      } else {
+        return res.status(500).send('error');
+      }
     }
     this.agents.forEach(agent => {
-      if (agent.port === body.port && agent.host === body.host) {
+      if (Number(agent.port) === Number(body.port) && agent.host === req.hostname) {
         agent.available = true;
         delete (agent.buildId);
       }
@@ -95,7 +100,6 @@ class Controller {
 
   pingAgents = async () => {
     this.intervalPing = setInterval(async () => {
-      console.log('Пингую агентов');
       this.agents.forEach(async (agent, i) => {
         const { host, port } = agent;
 
@@ -104,7 +108,7 @@ class Controller {
             return console.log(err);
           }
           if (alive) {
-            return console.log(alive);
+            return;
           }
           console.log(`Пропал коннект между сервером, и агентом. На ${host}:${port} << Агент будет удален из списка`);
           if (agent.buildId) {
@@ -134,7 +138,7 @@ class Controller {
     setInterval(async () => {
       if (this.builds.length !== 0 && this.agents.length !== 0) {
         this.agents.forEach(async agent => {
-          if (agent.available) {
+          if (agent.available && this.builds.length !== 0) {
             const { host, port } = agent;
             const { id, commitHash } = this.builds.pop();
             const { repoName, buildCommand, mainBranch } = this.config;
@@ -153,12 +157,18 @@ class Controller {
             }
             console.log(response.status, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
             if (response.status === 202) {
+              const tryCount = 0;
               agent.available = false;
               agent.buildId = id;
               try {
                 await this.yandexApi.startBuild({ buildId: id, dateTime: new Date() });
               } catch (error) {
-                console.log(error);
+                if (tryCount < 4) {
+                  await this.yandexApi.startBuild({ buildId: id, dateTime: new Date() });
+                  tryCount += 1;
+                } else {
+                  console.log(error);
+                }
               }
             }
           }

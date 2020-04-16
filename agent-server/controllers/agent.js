@@ -7,7 +7,6 @@ const { mkDirAsync, fileExistsAsync, execAsync } = require('../utils/utils');
 
 class Agent {
   available = true;
-  host = 'localhost';
   intervalPing;
 
   constructor(webClient, config, spawn) {
@@ -21,7 +20,6 @@ class Agent {
     let response;
     try {
       response = await this.webClient.post('/notify-agent', {
-        host: this.host,
         port: Number(this.port),
         available: this.available
       });
@@ -107,7 +105,7 @@ class Agent {
   checkoutRepo = ({ commitHash, repoName }) => {
     const cwd = join(__dirname, '../', '/clonesRepo', `${this.port}`, repoName);
 
-    const git = spawn('git', ['checkout', '-q', commitHash], { cwd });
+    const git = this.spawn('git', ['checkout', '-q', commitHash], { cwd });
     return new Promise(((resolve, reject) => {
       git.on('error', err => reject({
         err: 'ERR_CHECKOUT_REPO',
@@ -129,7 +127,7 @@ class Agent {
     }
     const cwd = join(__dirname, '../', '/clonesRepo', `${this.port}`, repoSitoryName);
 
-    const run = spawn(buildCommand, [], { cwd: cwd, shell: true })
+    const run = this.spawn(buildCommand, [], { cwd: cwd, shell: true })
     console.log(buildCommand)
     let stdout = '';
     let stderr = '';
@@ -146,12 +144,11 @@ class Agent {
         const finishBuild = new Date();
         this.available = true;
         resolve({
-          host: this.host,
           port: this.port,
           available: this.available,
           buildId: id,
           duration: Math.ceil(((finishBuild - startBuild) / 1000) / 60),
-          success: false,
+          success: true,
           buildLog: (stdout + stderr) || 'string'
         });
       });
@@ -160,7 +157,6 @@ class Agent {
         const finishBuild = new Date();
         this.available = true;
         resolve({
-          host: this.host,
           port: this.port,
           available: this.available,
           buildId: id,
