@@ -6,7 +6,7 @@ app.use(express.json());
 
 app.post('/build', (req, res) => {
   agent.build(req.body)
-    .then(data => console.log(data));
+    .then(data => agent.sendResultBuild(data));
   res.status(202).send('add to build');
 });
 
@@ -33,6 +33,7 @@ app.listen(port, err => {
     console.log(err)
   }
   agent.registry();
+  agent.pingServer();
   console.log('listen port', port);
 
 });

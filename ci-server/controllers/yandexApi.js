@@ -1,5 +1,7 @@
 const axios = require('../utils/axios-instance');
+const axiosRetry = require('axios-retry');
 
+axiosRetry(axios, { retries: 3 });
 class YandexApi {
 
   constructor(webClient) {
@@ -24,7 +26,7 @@ class YandexApi {
   finishBuild = ({ buildId, duration, success, buildLog = "string" }) => {
     return this.webClient.post('/build/finish', {
       buildId,
-      duration: Math.round(Number(duration)),
+      duration: Number(duration),
       success,
       buildLog
     }).catch(err => console.log(err));

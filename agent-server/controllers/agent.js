@@ -1,17 +1,21 @@
 const axios = require('../utils/axios-instance');
 const config = require('../agent-conf.json');
-const { spawn, exec } = require('child_process');
+const tcp = require('tcp-ping');
+const { spawn } = require('child_process');
 const { join } = require('path');
 const { mkDirAsync, fileExistsAsync, execAsync } = require('../utils/utils');
 
 class Agent {
   available = true;
   host = 'localhost';
+  intervalPing;
 
   constructor(webClient, config, spawn) {
     this.webClient = webClient;
     this.port = process.argv[2] || config.port;
     this.spawn = spawn;
+    this.serverHost = config.serverHost;
+    this.serverPort = config.serverPort;
   }
   registry = async (tryCount = 0) => {
     let response;
@@ -35,6 +39,21 @@ class Agent {
       return;
     }
     console.log(response.status, 'Зарегались');
+  }
+
+  pingServer = () => {
+    this.interval = setInterval(() => {
+      tcp.probe(this.serverHost, this.serverPort, async (err, alive) => {
+        if (err) {
+          return console.log(err);
+        }
+        if (alive) {
+          return;
+        }
+        console.log(`Пропал коннект между сервером, >>> эвакуация`);
+        process.exit();
+      });
+    }, 5000);
   }
 
   sendResultBuild = async (result, tryCount = 0) => {
@@ -98,19 +117,6 @@ class Agent {
     }));
   }
 
-  test = () => {
-    const cwd = join(__dirname, '../', '/clonesRepo', `${this.port}`, 'hw3-ci-server');
-
-    const ig = spawn('cd ci-client/ && npm i && npm run test', [], { cwd: cwd, shell: true })
-
-
-    ig.on('error', err => {
-      console.log(err);
-    })
-    ig.stdout.on('data', data => console.log(data.toString()))
-    ig.stderr.on('data', data => console.log(data.toString()))
-
-  }
   build = async ({ id, commitHash, repoName, buildCommand, mainBranch }) => {
     const [userName, repoSitoryName] = repoName.split('/');
     this.available = false;
@@ -129,7 +135,10 @@ class Agent {
     let stderr = '';
     return new Promise(resolve => {
       console.log(stderr, stdout)
-      run.stdout.on('data', data => stdout += data);
+      run.stdout.on('data', data => {
+        stdout += data
+        console.log(data.toString())
+      });
       run.stderr.on('data', data => stderr += data);
 
       run.on('error', () => {
@@ -141,7 +150,7 @@ class Agent {
           port: this.port,
           available: this.available,
           buildId: id,
-          duration: finishBuild - startBuild,
+          duration: Math.ceil(((finishBuild - startBuild) / 1000) / 60),
           success: false,
           buildLog: (stdout + stderr) || 'string'
         });
@@ -155,7 +164,7 @@ class Agent {
           port: this.port,
           available: this.available,
           buildId: id,
-          duration: finishBuild - startBuild,
+          duration: Math.ceil(((finishBuild - startBuild) / 1000) / 60),
           success: true,
           buildLog: (stdout + stderr) || 'string'
         });
@@ -166,5 +175,5 @@ class Agent {
 }
 
 const instance = new Agent(axios, config, spawn);
-instance.test();
+
 module.exports = instance;

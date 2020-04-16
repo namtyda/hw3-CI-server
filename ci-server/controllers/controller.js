@@ -1,6 +1,10 @@
 const yandexApi = require('./yandexApi');
 const tcp = require('tcp-ping');
 const axios = require('axios');
+const axiosRetry = require('axios-retry');
+
+axiosRetry(axios, { retries: 3 });
+
 
 class Controller {
   agents = [];
@@ -23,9 +27,11 @@ class Controller {
     if (host === undefined || port === undefined) {
       return res.status(500).send('bad request');
     }
-    this.agents.push(body);
-    res.status(200).send('ok');
-    console.log(this.agents)
+    if (this.agents.every(agent => agent.host !== body.host && agent.port !== body.port)) {
+      this.agents.push(body);
+      res.status(200).send('ok');
+      console.log(this.agents)
+    }
   };
 
   sendResultBuild = (req, res) => {
