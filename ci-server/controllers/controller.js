@@ -30,6 +30,7 @@ class Controller {
 
   sendResultBuild = (req, res) => {
     const { body } = req;
+    console.log(body)
     try {
       this.yandexApi.finishBuild(body)
     } catch (error) {
@@ -38,7 +39,7 @@ class Controller {
     }
     this.agents.forEach(agent => {
       if (agent.port === body.port && agent.host === body.host) {
-        agent.status = true;
+        agent.available = true;
         delete (agent.buildId);
       }
     });
@@ -108,6 +109,7 @@ class Controller {
             }
           }
           this.agents.splice(i, 1);
+          console.log(this.agents)
         });
       });
 

@@ -24,7 +24,7 @@ class YandexApi {
   finishBuild = ({ buildId, duration, success, buildLog = "string" }) => {
     return this.webClient.post('/build/finish', {
       buildId,
-      duration: Number(duration),
+      duration: Math.round(Number(duration)),
       success,
       buildLog
     }).catch(err => console.log(err));

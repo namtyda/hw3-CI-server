@@ -6,9 +6,8 @@ app.use(express.json());
 
 app.post('/build', (req, res) => {
   agent.build(req.body)
-    .then(data => agent.sendResultBuild(data));
+    .then(data => console.log(data));
   res.status(202).send('add to build');
-  console.log('aadsda')
 });
 
 app.use((req, res) => {

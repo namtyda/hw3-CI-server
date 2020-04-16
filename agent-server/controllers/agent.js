@@ -1,6 +1,6 @@
 const axios = require('../utils/axios-instance');
 const config = require('../agent-conf.json');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const { join } = require('path');
 const { mkDirAsync, fileExistsAsync, execAsync } = require('../utils/utils');
 
@@ -86,7 +86,6 @@ class Agent {
   }
 
   checkoutRepo = ({ commitHash, repoName }) => {
-    console.log(repoName)
     const cwd = join(__dirname, '../', '/clonesRepo', `${this.port}`, repoName);
 
     const git = spawn('git', ['checkout', '-q', commitHash], { cwd });
@@ -100,36 +99,40 @@ class Agent {
   }
 
   test = () => {
-    const cwd = join(__dirname, '../', '/clonesRepo', `3006`, 'hw3-ci-server');
+    const cwd = join(__dirname, '../', '/clonesRepo', `${this.port}`, 'hw3-ci-server');
 
-    const process = spawn('bash', ['cd ci-client && npm i && npm run test'], { cwd })
-    return new Promise(((resolve, reject) => {
+    const ig = spawn('cd ci-client/ && npm i && npm run test', [], { cwd: cwd, shell: true })
 
-      process.on('error', err => reject(err.toString()));
-      process.on('close', () => resolve());
-    }));
+
+    ig.on('error', err => {
+      console.log(err);
+    })
+    ig.stdout.on('data', data => console.log(data.toString()))
+    ig.stderr.on('data', data => console.log(data.toString()))
+
   }
   build = async ({ id, commitHash, repoName, buildCommand, mainBranch }) => {
-    const [userName, reposName] = repoName.split('/');
+    const [userName, repoSitoryName] = repoName.split('/');
     this.available = false;
     const startBuild = new Date();
     try {
-      await this.cloneRepo({ branchName: mainBranch, repoName: reposName, userName });
-      await this.checkoutRepo({ commitHash, repoName: reposName });
+      await this.cloneRepo({ branchName: mainBranch, repoName: repoSitoryName, userName });
+      await this.checkoutRepo({ commitHash, repoName: repoSitoryName });
     } catch (error) {
       console.log(error);
     }
-    const cwd = join(__dirname, '../', '/clonesRepo', `${this.port}`, repoName);
-    console.log()
-    const process = spawn('bash', [buildCommand], { cwd })
+    const cwd = join(__dirname, '../', '/clonesRepo', `${this.port}`, repoSitoryName);
+
+    const run = spawn(buildCommand, [], { cwd: cwd, shell: true })
+    console.log(buildCommand)
     let stdout = '';
     let stderr = '';
     return new Promise(resolve => {
       console.log(stderr, stdout)
-      process.stdout.on('data', data => stdout += data);
-      process.stderr.on('data', data => stderr += data);
+      run.stdout.on('data', data => stdout += data);
+      run.stderr.on('data', data => stderr += data);
 
-      process.on('error', () => {
+      run.on('error', () => {
         console.log(stderr)
         const finishBuild = new Date();
         this.available = true;
@@ -140,11 +143,11 @@ class Agent {
           buildId: id,
           duration: finishBuild - startBuild,
           success: false,
-          buildLog: "string"
+          buildLog: (stdout + stderr) || 'string'
         });
       });
 
-      process.on('close', () => {
+      run.on('close', () => {
         const finishBuild = new Date();
         this.available = true;
         resolve({
@@ -154,13 +157,14 @@ class Agent {
           buildId: id,
           duration: finishBuild - startBuild,
           success: true,
-          buildLog: stderr
+          buildLog: (stdout + stderr) || 'string'
         });
       });
     });
   }
+
 }
 
 const instance = new Agent(axios, config, spawn);
-
+instance.test();
 module.exports = instance;
