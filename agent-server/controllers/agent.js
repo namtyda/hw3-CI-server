@@ -148,7 +148,7 @@ class Agent {
           available: this.available,
           buildId: id,
           duration: Math.ceil(((finishBuild - startBuild) / 1000) / 60),
-          success: true,
+          success: false,
           buildLog: (stdout + stderr) || 'string'
         });
       });
