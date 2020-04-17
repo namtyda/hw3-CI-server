@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { store } from '../../redux/store';
+import { createClientStore } from '../../redux/store';
 import './App.scss';
 import { StartConnect } from '../Start/Start';
 import { SettingsConnect } from '../Settings/Settings';
@@ -12,7 +12,7 @@ import { DetailsConnect } from '../Details/Details';
 function App() {
   return (
     <Router>
-      <Provider store={store}>
+      <Provider store={createClientStore()}>
         
         <div className="App">
           <Switch>

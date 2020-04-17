@@ -6,9 +6,8 @@ import { Footer } from '../Footer/Footer';
 import { PopUp } from '../PopUp/PopUp';
 import { Loader } from '../Loader/Loader';
 import { connect } from 'react-redux';
-import { getBuildListThunk, postNewBuildQueue } from '../../redux/historyReducer';
-import { getConfigThunk } from '../../redux/settingsReducer';
 import { withRouter } from 'react-router-dom';
+import { mapStateToProps, mapDispatchToProps } from './selectors';
 
 function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, repoName, history, runNewBuild, errorPostReq, getConfigThunk }) {
   const [toggle, setToggle] = useState(false);
@@ -103,13 +102,6 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
     </>
   );
 }
-const mapStateToProps = ({ history }) => ({
-  isLoading: history.isLoading,
-  buildList: history.buildList,
-  repoName: history.repoName,
-  runNewBuild: history.runNewBuild,
-  allBuildList: history.allBuildList,
-  errorPostReq: history.errorPostReq
-});
 
-export const HistoryConnect = withRouter(connect(mapStateToProps, { getBuildListThunk, postNewBuildQueue, getConfigThunk })(History));
+
+export const HistoryConnect = withRouter(connect(mapStateToProps, mapDispatchToProps)(History));

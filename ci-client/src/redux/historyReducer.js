@@ -1,5 +1,5 @@
 import { api } from '../api/api';
-const initialState = {
+export const initialState = {
   isLoading: false,
   buildList: [],
   repoName: '',
@@ -29,22 +29,22 @@ export const actionGetBuilds = (data) => ({
   payload: data
 });
 
-const loading = (data) => ({
+export const loading = (data) => ({
   type: 'LOAD_TOGGLE',
   payload: data
 });
 
-const getRepoName = (data) => ({
+export const getRepoName = (data) => ({
   type: 'GET_REPONAME',
   payload: data
 });
 
-const addBuildInQueue = (status) => ({
+export const addBuildInQueue = (status) => ({
   type: 'RUN_NEW_BUILD',
   payload: status
 });
 
-const errorOnRequestNewBuild = (data) => ({
+export const errorOnRequestNewBuild = (data) => ({
   type: 'ERROR_POST_REQ',
   payload: data
 });

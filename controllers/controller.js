@@ -1,7 +1,10 @@
+require('dotenv').config();
 const { gitClone, compareCommit, getCommitInfo, stopWatcher, watcher } = require('./git');
 const { writeLog, readLog, checkLog } = require('./cashLog');
 const axios = require('../utils/axios-inst');
 const store = { first: true }
+
+
 
 // Получаю настройки
 module.exports.getSettings = async (_, res) => {
@@ -9,31 +12,32 @@ module.exports.getSettings = async (_, res) => {
   try {
     responseGetSettings = await axios.get('/conf');
   } catch (err) {
-    res.status(500).send(err);
+    console.log(err);
+    res.status(500).send(err.toString());
   }
-  const { data, status } = responseGetSettings;
+  if (responseGetSettings) {
+    const { data, status } = responseGetSettings;
 
-  if (status !== 200) {
-    return res.status(500).send('bad request');
+    if (status !== 200) {
+      return res.status(500).send('bad request');
+    }
+    if ('data' in data) {
+      return res.status(200).send({
+        id: data.data.id,
+        repoName: data.data.repoName,
+        buildCommand: data.data.buildCommand,
+        mainBranch: data.data.mainBranch,
+        period: data.data.period
+      });
+    }
+    res.status(204).send('no content');
   }
-  if ('data' in data) {
-    return res.send({
-      id: data.data.id,
-      repoName: data.data.repoName,
-      buildCommand: data.data.buildCommand,
-      mainBranch: data.data.mainBranch,
-      period: data.data.period
-    });
-  }
-  res.status(204).send('no content');
-
 }
 
 // Получаю массив со списком билдов
 module.exports.getBuilds = async (req, res) => {
   const { query } = req;
   let responseBuilds;
-
   try {
     responseBuilds = await axios.get('/build/list', {
       params: {
@@ -116,7 +120,6 @@ module.exports.getLogs = async (req, res) => {
 // Добавление в очередь 
 module.exports.postAddInstQueue = async (req, res) => {
   const allCommits = await getCommitInfo(store.repoName, store.mainBranch, all = true);
-
   const { params, body } = req;
   const { commitHash } = params;
 
@@ -147,7 +150,6 @@ module.exports.postAddInstQueue = async (req, res) => {
 // Сохранение настроек
 module.exports.postSettings = async (req, res) => {
   const { body } = req;
-
   [store.userName, store.repoName] = body.repoName.split('/');
   store.buildCommand = body.buildCommand;
   store.mainBranch = body.mainBranch;

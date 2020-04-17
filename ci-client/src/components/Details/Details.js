@@ -6,8 +6,8 @@ import { Footer } from '../Footer/Footer';
 import { Card } from '../Card/Card';
 import { connect } from 'react-redux';
 import { Loader } from '../Loader/Loader';
-import { getDetailsBuild, postBuildInQueue } from '../../redux/detailsReducer';
 import { withRouter } from 'react-router-dom';
+import { mapStateToProps, mapDispatchToProps } from './selectors';
 
 function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo, repoName, isLoading, logs }) {
   useEffect(() => {
@@ -52,10 +52,4 @@ function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo,
   );
 }
 
-const mapStateToProps = ({ details }) => ({
-  isLoading: details.isLoading,
-  repoName: details.repoName,
-  buildInfo: details.buildInfo,
-  logs: details.logs
-});
-export const DetailsConnect = withRouter(connect(mapStateToProps, { getDetailsBuild, postBuildInQueue })(Details));
+export const DetailsConnect = withRouter(connect(mapStateToProps, mapDispatchToProps)(Details));

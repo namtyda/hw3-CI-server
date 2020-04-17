@@ -1,5 +1,5 @@
 import { api } from '../api/api';
-const initianState = {
+export const initianState = {
   isLoading: false,
   repoName: '',
   buildInfo: {},
@@ -24,27 +24,27 @@ export function detailsReducer(state = initianState, action) {
   }
 }
 
-const loading = (data) => ({
+export const loading = (data) => ({
   type: 'LOAD_TOGGLE',
   payload: data
 });
 
-const getInfo = (data) => ({
+export const getInfo = (data) => ({
   type: 'GET_BUILD_INFO',
   payload: data
 });
 
-const getRepoName = (data) => ({
+export const getRepoName = (data) => ({
   type: 'GET_REPONAME',
   payload: data
 });
 
-const getRebuildInfo = (data) => ({
+export const getRebuildInfo = (data) => ({
   type: 'GET_REBUILD_INFO',
   payload: data
 });
 
-const getLogs = (data) => ({
+export const getLogs = (data) => ({
   type: 'GET_LOGS',
   payload: data
 });
