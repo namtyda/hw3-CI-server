@@ -1,9 +1,6 @@
 const yandexApi = require('./yandexApi');
 const tcp = require('tcp-ping');
 const axios = require('axios');
-const rax = require('retry-axios');
-
-const interceptorId = rax.attach(axios);
 
 class Controller {
   agents = [];

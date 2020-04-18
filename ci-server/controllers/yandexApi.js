@@ -1,14 +1,15 @@
 const axios = require('../utils/axios-instance');
-const rax = require('retry-axios');
 
-axios.defaults.raxConfig = {
-  instance: axios
-};
-const interceptorId = rax.attach(axios);
 class YandexApi {
 
   constructor(webClient) {
     this.webClient = webClient;
+    this.webClient.interceptors.response.use(null, (error) => {
+      if (error.config && error.response && error.response.status >= 500) {
+        return this.webClient.request(error.config);
+      }
+      return Promise.reject(error);
+    });
   }
 
   getBuildList = () => {
