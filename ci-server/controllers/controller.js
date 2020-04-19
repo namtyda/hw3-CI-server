@@ -89,6 +89,7 @@ class Controller {
     this.getBuilds();
     this.interval = setInterval(() => {
       if (this.builds.length === 0) {
+        this.getConfig()
         console.log('Запрос за новыми билдами', this.intervalTime);
         this.getBuilds();
       }

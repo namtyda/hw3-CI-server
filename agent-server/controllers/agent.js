@@ -153,7 +153,7 @@ class Agent {
         });
       });
 
-      run.on('close', () => {
+      run.on('close', (status) => {
         const finishBuild = new Date();
         this.available = true;
         resolve({
@@ -161,7 +161,7 @@ class Agent {
           available: this.available,
           buildId: id,
           duration: Math.ceil(((finishBuild - startBuild) / 1000) / 60),
-          success: true,
+          success: status === 0,
           buildLog: (stdout + stderr) || 'string'
         });
       });
