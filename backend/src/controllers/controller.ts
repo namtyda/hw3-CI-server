@@ -1,10 +1,11 @@
 import dotenv from 'dotenv'
 dotenv.config();
 import { gitClone, compareCommit, getCommitInfo, stopWatcher, watcher } from './git';
-const { writeLog, readLog, checkLog } = require('./cashLog');
+import { writeLog, readLog, checkLog } from './cashLog';
 import axios from '../utils/axios-inst'
 import { getConfig, getBuilds, Status, addQueueBody, saveSettings } from '../routers/router';
 import { Response, Request } from 'express-serve-static-core';
+import { AxiosResponse } from 'axios';
 interface store {
   first: boolean;
   mainBranch: string;
@@ -54,7 +55,7 @@ const getSettings = async (_: Request, res: Response<getConfig | string>) => {
 // Получаю массив со списком билдов
 const getBuilds = async (req: Request, res: Response<Array<getBuilds<Status>> | string>) => {
   const { query } = req;
-  let responseBuilds;
+  let responseBuilds: AxiosResponse<getBuilds<Status>>;
   try {
     responseBuilds = await axios.get<getBuilds<Status>>('/build/list', {
       params: {
@@ -82,7 +83,7 @@ const getBuildId = async (req: Request, res: Response<Array<getBuilds<Status>> |
   if (buildId === undefined) {
     return res.status(400).send('build paramas not defined');
   }
-  let responseBuildId;
+  let responseBuildId: AxiosResponse<getBuilds<Status>>;
   try {
     responseBuildId = await axios.get<getBuilds<Status>>('/build/details', {
       params: {
@@ -110,7 +111,7 @@ const getLogs = async (req: Request, res: Response<string>) => {
     return res.status(400).send('buildId is not defined');
   }
 
-  let responseLogs;
+  let responseLogs: AxiosResponse<NodeJS.ReadableStream>;
 
   try {
     if (await checkLog(buildId)) {
@@ -118,7 +119,7 @@ const getLogs = async (req: Request, res: Response<string>) => {
       return await readLog(buildId, res);
     }
     console.log('Запрос логов');
-    responseLogs = await axios.get<string>('/build/log', {
+    responseLogs = await axios.get<NodeJS.ReadableStream>('/build/log', {
       params: {
         buildId
       },
@@ -165,16 +166,16 @@ const postAddInstQueue = async (req: Request, res: Response<addQueueBody | strin
 }
 
 // Сохранение настроек
-const postSettings = async (req: Request, res: Response<saveSettings | string>) => {
+const postSettings = async (req: Request<{}, saveSettings>, res: Response<saveSettings | string>) => {
   const { body } = req;
   [store.userName, store.repoName] = body.repoName.split('/');
   store.buildCommand = body.buildCommand;
   store.mainBranch = body.mainBranch;
   store.period = body.period;
   console.log(body)
-  let responseSettings;
+  let responseSettings: AxiosResponse<saveSettings>;
   try {
-    responseSettings = await axios.post('/conf', {
+    responseSettings = await axios.post<saveSettings>('/conf', {
       repoName: body.repoName,
       buildCommand: body.buildCommand,
       mainBranch: body.mainBranch,

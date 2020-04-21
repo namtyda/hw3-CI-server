@@ -49,7 +49,6 @@ export interface addQueueBody {
 }
 
 export interface saveSettings {
-  id: string;
   repoName: string;
   buildCommand: string;
   mainBranch: string;
@@ -60,7 +59,7 @@ router.get<{}, Array<getBuilds<Status>> | string, getBuildsParams>('/builds', ge
 router.get<{}, Array<getBuilds<Status>> | string, buildIdQuery>('/builds/:buildId', getBuildId);
 router.get<{}, string, buildIdQuery>('/builds/:buildId/logs', getLogs);
 
-router.post<{}, addQueueBody | string, addQueueQuery>('/builds/:commitHash', postAddInstQueue);
-router.post<{}, saveSettings | string>('/settings', postSettings);
+router.post<{}, addQueueBody | string,  addQueueQuery>('/builds/:commitHash', postAddInstQueue);
+router.post<{}, saveSettings | string, saveSettings>('/settings', postSettings);
 
 

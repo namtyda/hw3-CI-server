@@ -1,14 +1,17 @@
-const { resolve, join } = require('path');
-const { createReadStream, createWriteStream } = require('fs');
-const { getStatAsync, fileExistsAsync, mkDirAsync } = require('../utils/promisified');
-
-const store = {
+import { join } from 'path';
+import { createReadStream, createWriteStream } from 'fs';
+import { getStatAsync, fileExistsAsync, mkDirAsync } from '../utils/promisified';
+interface store {
+  path: string;
+  cacheTime: number;
+}
+const store: store = {
   path: join(__dirname, '../', '/logs'),
   cacheTime: 5 // minute
 };
 // Проверяем есть ли лог, и не вышло ли время жизни
-async function checkLog(buildId) {
-  const path = join(store.path, buildId + '.cache');
+async function checkLog(buildId: string) {
+  const path: string = join(store.path, buildId + '.cache');
   if (!await fileExistsAsync(path)) {
     console.log('cache file not exists');
     return false;
@@ -19,12 +22,12 @@ async function checkLog(buildId) {
   return now - stat.mtimeMs <= cacheLifeTime;
 }
 // Пишем лог
-async function writeLog(buildId, stream) {
+async function writeLog(buildId: string, stream: NodeJS.ReadableStream) {
   return new Promise(async (resolve, reject) => {
     if (!await fileExistsAsync(store.path)) {
       await mkDirAsync(store.path, { recursive: true });
     }
-    const writeStream = createWriteStream(join(store.path, buildId + '.cache'), { flags: 'w' });
+    const writeStream: NodeJS.WritableStream = createWriteStream(join(store.path, buildId + '.cache'), { flags: 'w' });
 
     stream.pipe(writeStream);
 
@@ -32,21 +35,21 @@ async function writeLog(buildId, stream) {
       resolve(true);
     });
 
-    writeStream.on('error', err => {
+    writeStream.on('error', (err: Error) => {
       reject(`error write cache ${err.toString()}`);
     });
   });
 }
 // Читаем лог
-async function readLog(buildId, stream) {
+async function readLog(buildId: string, stream: NodeJS.WritableStream) {
   return new Promise(async (resolve, reject) => {
-    const path = join(store.path, buildId + '.cache');
+    const path: string = join(store.path, buildId + '.cache');
 
     if (!await fileExistsAsync(path)) {
       resolve(false);
     }
 
-    const readStream = createReadStream(path);
+    const readStream: NodeJS.ReadableStream = createReadStream(path);
 
     readStream.pipe(stream);
     console.log('pipe log readStream');
@@ -55,9 +58,9 @@ async function readLog(buildId, stream) {
       resolve(true);
     });
 
-    readStream.on('error', err => {
+    readStream.on('error', (err: Error) => {
       reject(`readStream cache down with ${err.toString()}`);
     });
   });
 }
-module.exports = { writeLog, readLog, checkLog };
+export { writeLog, readLog, checkLog };
