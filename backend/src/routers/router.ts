@@ -30,7 +30,7 @@ export interface getBuilds<T> {
   start: string;
   duration: number;
 }
-interface getBuildsParams {
+export interface getBuildsParams {
   limit?: number;
   offset?: number;
 }

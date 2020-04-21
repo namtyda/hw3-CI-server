@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha src/test",
-    "test:int": "mocha src/testInt",
+    "test": "mocha  -r ts-node/register src/test/*.js",
+    "test:int": "mocha  -r ts-node/register src/testInt/*.js",
     "start": "TS_NODE_FILES=1 ts-node src/server.ts -r ts-node/register --ignore"
   },
   "repository": {
