@@ -1,16 +1,21 @@
-require('dotenv').config();
-const child = require('child_process');
-const path = require('path');
-const fs = require('fs');
-const { fileExistsAsync, execAsync } = require('../utils/promisified');
+import dotenv from 'dotenv'
+dotenv.config();
 
-
-const axios = require('../utils/axios-inst');
-const store = {
-  lastCommitHash: ''
+import { fileExistsAsync, execAsync } from '../utils/promisified';
+import child from 'child_process';
+import path from 'path';
+import fs, { FSWatcher } from 'fs';
+import axios from '../utils/axios-inst';
+interface store {
+  lastCommitHash: string;
+  fsWatch: string
+  intervalWatchId?: NodeJS.Timeout;
+}
+const store: store = {
+  lastCommitHash: '',
+  fsWatch: ''
 };
-
-async function removeRep(path) {
+async function removeRep(path: string) {
   return new Promise(async (resolve, reject) => {
     try {
       await execAsync(`rm -rf ${path}`);
@@ -21,7 +26,7 @@ async function removeRep(path) {
 
   });
 }
-async function gitClone(userName, repoName, branchName) {
+async function gitClone(userName: string, repoName: string, branchName: string) {
   if (await fileExistsAsync(path.resolve(__dirname, '../', 'clonesRepo', repoName))) {
     await removeRep(path.resolve(__dirname, '../', 'clonesRepo', repoName));
   }
@@ -29,7 +34,7 @@ async function gitClone(userName, repoName, branchName) {
   return Promise.resolve(res);
 }
 
-async function cloneRepo(userName, repoName, branchName) {
+async function cloneRepo(userName: string, repoName: string, branchName: string) {
   return new Promise((res, rej) => {
     const git = child.spawn("git", ["clone", '-b', branchName, `https://github.com/${userName}/${repoName}.git`], { cwd: path.join(__dirname, '../', 'clonesRepo') });
     git.stderr.on('data', err => {
@@ -43,14 +48,14 @@ async function cloneRepo(userName, repoName, branchName) {
   });
 }
 
-async function gitPull(userName, repoName, branchName) {
+async function gitPull(userName: string, repoName: string, branchName: string) {
   if (await fileExistsAsync(path.resolve(__dirname, '../', 'clonesRepo', repoName))) {
     const res = await pull(userName, repoName, branchName);
     return res;
   }
 }
 
-function pull(userName, repoName, branchName) {
+function pull(userName: string, repoName: string, branchName: string) {
   return new Promise((res, rej) => {
     const pull = child.spawn("git", ["pull", `https://github.com/${userName}/${repoName}.git`, branchName], { cwd: path.join(__dirname, '../', 'clonesRepo', repoName) });
     pull.stderr.on('data', err => {
@@ -64,19 +69,26 @@ function pull(userName, repoName, branchName) {
 
   })
 }
-async function getCommitInfo(repoName, branchName, all = false, switchRepo = false) {
+async function getCommitInfo(repoName: string, branchName: string, all: boolean = false, switchRepo: boolean = false) {
   if (await fileExistsAsync(path.resolve(__dirname, '../', 'clonesRepo', repoName))) {
-    const res = await commitInfo(repoName, branchName, all, switchRepo);
+    const res: commitsList[] = await commitInfo(repoName, branchName, all, switchRepo);
     return Promise.resolve(res)
   }
-}
+  return Promise.resolve([])
 
-async function commitInfo(repoName, branchName, all = false, switchRepo = false) {
+}
+interface commitsList {
+  commitHash: string;
+  authorName: string;
+  commitMessage: string;
+  branchName: string;
+}
+async function commitInfo(repoName: string, branchName: string, all: boolean = false, switchRepo: boolean = false) {
   switchRepo ? store.lastCommitHash = '' : store.lastCommitHash
   let hashLast = store.lastCommitHash.length > 0 && !all ? store.lastCommitHash + '...HEAD' : '--no-decorate';
   let buff = Buffer.alloc(0);
-  let result;
-  return new Promise((resolve, rej) => {
+  let result: commitsList[] = [];
+  return new Promise<commitsList[]>((resolve, rej) => {
     const git = child.spawn('git', ['log', '--pretty=format:{"commitHash":"%H", "authorName":"%cn", "commitMessage":"%s"}', hashLast], { cwd: path.join(__dirname, '../', 'clonesRepo', repoName) });
 
 
@@ -94,16 +106,17 @@ async function commitInfo(repoName, branchName, all = false, switchRepo = false)
       if (str) {
         result = str.split('\n').map((el, i) => JSON.parse(el));
         store.lastCommitHash = result[0].commitHash;
-        resolve(result);
+        return resolve(result);
       }
-      resolve([]);
+      return resolve(result);
     });
   });
 }
 
-function watcher(interval, repoName, userName, branchName) {
+function watcher(interval: number, repoName: string, userName: string, branchName: string) {
   const intervalMs = (interval || 1) * 60 * 1000; //msecond
-  store.fsWatch = fs.watchFile(path.resolve(__dirname, '../', 'clonesRepo', repoName), file => {
+  store.fsWatch = path.resolve(__dirname, '../', 'clonesRepo', repoName);
+  fs.watchFile(path.resolve(__dirname, '../', 'clonesRepo', repoName), file => {
     console.log(repoName, '<=== in this repo, files changed');
   });
   store.intervalWatchId = setInterval(async () => {
@@ -121,7 +134,7 @@ function watcher(interval, repoName, userName, branchName) {
 
 function stopWatcher() {
   if (store.fsWatch) {
-    store.fsWatch.stop()
+    fs.unwatchFile(store.fsWatch)
   }
 
   if (store.intervalWatchId) {
@@ -129,7 +142,7 @@ function stopWatcher() {
   }
 }
 
-async function compareCommit(commitInfo = [], branchName, isFirst = false) {
+async function compareCommit(commitInfo: commitsList[] = [], branchName: string, isFirst: boolean = false) {
   if (isFirst) {
     const { commitMessage, commitHash, authorName } = commitInfo[0];
     let responseQueue;
@@ -140,7 +153,7 @@ async function compareCommit(commitInfo = [], branchName, isFirst = false) {
         branchName,
         authorName
       });
-      
+
     } catch (err) {
       return err;
     }
@@ -154,7 +167,7 @@ async function compareCommit(commitInfo = [], branchName, isFirst = false) {
     }
 
   } else if (!isFirst && commitInfo.length > 0) {
-    const promiseAll = [];
+    const promiseAll: [] = [];
     commitInfo.forEach(async ({ commitMessage, commitHash, authorName }) => {
       promiseAll.push(await axios.post('/build/request', {
         commitMessage,
@@ -163,10 +176,10 @@ async function compareCommit(commitInfo = [], branchName, isFirst = false) {
         authorName
       }));
       // Почему то если посылать несколько запросов, некоторые падают с 500. Мб стоит ограничение по времени в хранилище.
-      Promise.allSettled(promiseAll)
+      Promise.all(promiseAll)
         .then(res => console.log('Добавление задачи успешно'))
         .catch(err => console.log('Ошибка при добавлении задача', err));
     });
   }
 }
-module.exports = { gitClone, gitPull, getCommitInfo, compareCommit, stopWatcher, watcher, cloneRepo, pull, commitInfo, removeRep }
+export { gitClone, gitPull, getCommitInfo, compareCommit, stopWatcher, watcher, cloneRepo, pull, commitInfo, removeRep }

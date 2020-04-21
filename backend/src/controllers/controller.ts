@@ -1,13 +1,30 @@
-require('dotenv').config();
-const { gitClone, compareCommit, getCommitInfo, stopWatcher, watcher } = require('./git');
+import dotenv from 'dotenv'
+dotenv.config();
+import { gitClone, compareCommit, getCommitInfo, stopWatcher, watcher } from './git';
 const { writeLog, readLog, checkLog } = require('./cashLog');
-const axios = require('../utils/axios-inst');
-const store = { first: true }
-
+import axios from '../utils/axios-inst'
+import { getConfig, getBuilds, Status, addQueueBody, saveSettings } from '../routers/router';
+import { Response, Request } from 'express-serve-static-core';
+interface store {
+  first: boolean;
+  mainBranch: string;
+  repoName: string;
+  period: number;
+  buildCommand?: string;
+  userName: string;
+}
+const store: store = {
+  first: true,
+  repoName: '',
+  mainBranch: '',
+  period: 1,
+  buildCommand: '',
+  userName: ''
+}
 
 
 // Получаю настройки
-module.exports.getSettings = async (_, res) => {
+const getSettings = async (_: Request, res: Response<getConfig | string>) => {
   let responseGetSettings;
   try {
     responseGetSettings = await axios.get('/conf');
@@ -35,11 +52,11 @@ module.exports.getSettings = async (_, res) => {
 }
 
 // Получаю массив со списком билдов
-module.exports.getBuilds = async (req, res) => {
+const getBuilds = async (req: Request, res: Response<Array<getBuilds<Status>> | string>) => {
   const { query } = req;
   let responseBuilds;
   try {
-    responseBuilds = await axios.get('/build/list', {
+    responseBuilds = await axios.get<getBuilds<Status>>('/build/list', {
       params: {
         offset: query.offset || 0,
         limit: query.limit || 25
@@ -57,7 +74,7 @@ module.exports.getBuilds = async (req, res) => {
 }
 
 // Получаю инфу о билде по buildId 
-module.exports.getBuildId = async (req, res) => {
+const getBuildId = async (req: Request, res: Response<Array<getBuilds<Status>> | string>) => {
   const { params } = req;
   const { buildId } = params;
 
@@ -67,7 +84,7 @@ module.exports.getBuildId = async (req, res) => {
   }
   let responseBuildId;
   try {
-    responseBuildId = await axios.get('/build/details', {
+    responseBuildId = await axios.get<getBuilds<Status>>('/build/details', {
       params: {
         buildId
       }
@@ -85,7 +102,7 @@ module.exports.getBuildId = async (req, res) => {
 }
 
 // Получение логов билда по buildId
-module.exports.getLogs = async (req, res) => {
+const getLogs = async (req: Request, res: Response<string>) => {
   const { params } = req;
   const { buildId } = params;
 
@@ -101,7 +118,7 @@ module.exports.getLogs = async (req, res) => {
       return await readLog(buildId, res);
     }
     console.log('Запрос логов');
-    responseLogs = await axios.get('/build/log', {
+    responseLogs = await axios.get<string>('/build/log', {
       params: {
         buildId
       },
@@ -118,8 +135,8 @@ module.exports.getLogs = async (req, res) => {
 }
 
 // Добавление в очередь 
-module.exports.postAddInstQueue = async (req, res) => {
-  const allCommits = await getCommitInfo(store.repoName, store.mainBranch, all = true);
+const postAddInstQueue = async (req: Request, res: Response<addQueueBody | string>) => {
+  const allCommits: Array<addQueueBody> = await getCommitInfo(store.repoName, store.mainBranch, true);
   const { params, body } = req;
   const { commitHash } = params;
 
@@ -130,10 +147,10 @@ module.exports.postAddInstQueue = async (req, res) => {
   let responseQueue;
   try {
     responseQueue = await axios.post('/build/request', {
-      commitMessage: searchedCommits.commitMessage,
+      commitMessage: searchedCommits?.commitMessage,
       commitHash,
       branchName: store.mainBranch,
-      authorName: searchedCommits.authorName
+      authorName: searchedCommits?.authorName
     });
 
   } catch (err) {
@@ -148,7 +165,7 @@ module.exports.postAddInstQueue = async (req, res) => {
 }
 
 // Сохранение настроек
-module.exports.postSettings = async (req, res) => {
+const postSettings = async (req: Request, res: Response<saveSettings | string>) => {
   const { body } = req;
   [store.userName, store.repoName] = body.repoName.split('/');
   store.buildCommand = body.buildCommand;
@@ -176,6 +193,7 @@ module.exports.postSettings = async (req, res) => {
   const list = await getCommitInfo(store.repoName, store.mainBranch, false, true);
   await compareCommit(list, store.mainBranch, store.first);
   watcher(store.period, store.repoName, store.userName, store.mainBranch);
-
   res.status(200).send('ok');
 }
+
+export { postSettings, postAddInstQueue, getLogs, getBuildId, getSettings, getBuilds }

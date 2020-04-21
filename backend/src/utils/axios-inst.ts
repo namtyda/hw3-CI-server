@@ -1,5 +1,5 @@
-const axios = require('axios');
-const https = require('https');
+import axios from 'axios';
+import https from 'https';
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false
 });
@@ -11,4 +11,4 @@ const inst = axios.create({
   httpsAgent
 });
 
-module.exports = inst;
+export = inst;
