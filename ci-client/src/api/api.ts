@@ -39,6 +39,7 @@ export interface getBuilds<T> {
   status: T;
   start: string;
   duration: number;
+
 }
 
 export interface getConfig {
@@ -53,7 +54,10 @@ export const api = {
   getConfig() {
     return axios.get<getConfig>('/settings')
       .then(res => res)
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        return err;
+      });
   },
   getBuildsList(data: number) {
     return axios.get<getBuilds<Status>>('/builds', {
@@ -62,13 +66,21 @@ export const api = {
       }
     })
       .then(res => res)
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        return err;
+      });
   },
 
   getDetailsBuild(buildId: string) {
     return axios.get<getBuilds<Status>>(`/builds/${buildId}`)
-      .then(res => res)
-      .catch(err => console.log(err));
+      .then(res => {
+        return res;
+      })
+      .catch(err => {
+        console.log(err)
+        return err;
+      });
   },
 
   postAddQueue(data: addQueue) {
@@ -80,9 +92,12 @@ export const api = {
   },
 
   getLogs(buildId: string) {
-    return axios.get<string>(`/builds/${buildId}/logs`)
+    return axios.get(`/builds/${buildId}/logs`)
       .then(res => res)
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err)
+        return err;
+      });
   },
 
   postSaveSettings(data: Config) {
@@ -93,6 +108,9 @@ export const api = {
       period: Number(data.period)
     })
       .then(res => res)
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        return err;
+      });
   }
 }

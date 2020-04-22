@@ -8,3 +8,4 @@ export const createClientStore = () => {
 
   return createStore(rootReducer, middleWare);
 };
+export type AppState = ReturnType<typeof rootReducer>;

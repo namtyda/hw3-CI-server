@@ -2,12 +2,13 @@
 
 Нода версии v13.10.1
 
-```
-npm i
-```
-Создаем .env, и запускаем server.js
+Переходим в папку с бэком на ноде ```cd backend```
 
-cd ci-client && npm i && npm start
+```npm i```
+
+Создаем .env, и запускаем приложение ```npm start```
+
+```cd ../ci-client && npm i && npm start```
 #### .env
 
 Создать в корне .env, в него записать 
