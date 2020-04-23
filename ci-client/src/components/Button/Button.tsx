@@ -3,14 +3,14 @@ import classNames from 'classnames';
 import './Button.scss';
 
 interface ButtonProps {
-  src: string;
-  text: string;
-  textWithIcon: string;
-  header: boolean;
-  accent: boolean;
-  settings: boolean;
-  history: boolean;
-  disabled: boolean;
+  src?: string;
+  text?: string;
+  textWithIcon?: string;
+  header?: boolean;
+  accent?: boolean;
+  settings?: boolean;
+  history?: boolean;
+  disabled?: boolean;
   onClick(): void;
 }
 export function Button({ src, text, textWithIcon, header, accent, settings, history, disabled, onClick }: ButtonProps) {

@@ -2,8 +2,18 @@ import React from 'react';
 import './PopUp.scss';
 import { Input } from '../Input/Input';
 import { Button } from '../Button/Button';
+interface PopUpProps {
+  onChange(): void;
+  onClickRunBuild(): void;
+  closePopUp(): void;
+  onClick(): boolean;
+  found?: boolean;
+  name: string;
+  value: string;
+  disabled: boolean;
 
-export function PopUp({ onChange, name, value, onClick, onClickRunBuild, closePopUp, disabled, found }) {
+}
+export function PopUp({ onChange, name, value, onClick, onClickRunBuild, closePopUp, disabled, found }: PopUpProps) {
   return (
     <div className='popup'>
       <div className='popup__wrapper'>

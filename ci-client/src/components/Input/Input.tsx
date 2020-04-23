@@ -2,8 +2,18 @@ import React from 'react';
 import classNames from 'classnames';
 import './Input.scss';
 
-
-export function Input({ labelText, name, require, value, onChange, placeholder, onClick, error, onFocus }) {
+interface InputProps {
+  labelText?: string;
+  name: string;
+  require?: boolean;
+  value: string;
+  onChange(): void;
+  placeholder?: string;
+  onClick(): void;
+  error?: boolean;
+  onFocus?: () => void;
+}
+export function Input({ labelText, name, require, value, onChange, placeholder, onClick, error, onFocus }: InputProps) {
   const paragraph = classNames('settings__paragraph', {
     'settings__require': require
   });

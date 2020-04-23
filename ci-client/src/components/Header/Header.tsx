@@ -3,7 +3,17 @@ import classNames from 'classnames';
 import './Header.scss';
 import { Button } from '../Button/Button';
 
-export function Header({ settings, button, history, title, details, onClick, onClick2, redirectHistory }) {
+interface HeaderProps {
+  settings: boolean;
+  button: boolean;
+  history: boolean;
+  title: string;
+  details: boolean;
+  onClick(): void;
+  onClick2(): void;
+  redirectHistory(): void;
+}
+export function Header({ settings, button, history, title, details, onClick, onClick2, redirectHistory }: HeaderProps) {
   const headerClass = classNames({
     'header_settings': settings,
     'header__content': !settings,

@@ -4,7 +4,20 @@ import { ru } from 'date-fns/locale'
 import './Card.scss';
 import classNames from 'classnames';
 
-export function Card({ details, id, buildNumber, commitMessage, commitHash = '', branchName, authorName, status, start, duration, onClick }) {
+interface CardProps {
+  details: boolean;
+  id: string;
+  buildNumber: number;
+  commitMessage: string;
+  commitHash: string;
+  branchName: string;
+  authorName: string;
+  status: string;
+  start: number;
+  duration: number;
+  onClick(): void;
+}
+export function Card({ details, id, buildNumber, commitMessage, commitHash = '', branchName, authorName, status, start, duration, onClick }: CardProps) {
 
   const informClass = classNames('card__information', {
     'details__card': details
