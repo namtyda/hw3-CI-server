@@ -7,8 +7,14 @@ import { Loader } from '../Loader/Loader';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { mapStateToProps, mapDispatchToProps } from './selectors';
+import { History } from 'history';
+interface StartProps {
+  getConfigThunk(history: History): void;
+  history: History;
+  isLoad: boolean;
+}
 
-function Start({ getConfigThunk, history, isLoad }) {
+function Start({ getConfigThunk, history, isLoad }: StartProps) {
   useEffect(() => getConfigThunk(history), [getConfigThunk, history]);
 
   const handleRedirectSettings = () => {

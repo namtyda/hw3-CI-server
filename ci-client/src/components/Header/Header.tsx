@@ -10,7 +10,7 @@ interface HeaderProps {
   title?: string;
   details?: boolean;
   onClick(): void;
-  onClick2(): void;
+  onClick2?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   redirectHistory?: () => void;
 }
 export function Header({ settings, button, history, title, details, onClick, onClick2, redirectHistory }: HeaderProps) {

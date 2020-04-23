@@ -78,7 +78,7 @@ interface errorWithCloning {
   payload: boolean;
 }
 
-type settingsActionTypes = addConfig | loadSettings | cloningRepo | errorWithCloning;
+export type settingsActionTypes = addConfig | loadSettings | cloningRepo | errorWithCloning;
 
 export const addConfig = (data: getConfig): settingsActionTypes => ({
   type: 'GET_CONFIG',
