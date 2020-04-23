@@ -6,10 +6,26 @@ import { Footer } from '../Footer/Footer';
 import { Card } from '../Card/Card';
 import { connect } from 'react-redux';
 import { Loader } from '../Loader/Loader';
-import { withRouter } from 'react-router-dom';
+import { withRouter, match } from 'react-router-dom';
 import { mapStateToProps, mapDispatchToProps } from './selectors';
+import { History } from 'history';
+import { addQueue} from '../../api/api';
+import { getBuildInfoDetails } from '../../redux/detailsReducer';
+interface optionRoute {
+  id: string;
+}
+interface DetailsProps {
+  match: match<optionRoute>;
+  history: History;
+  getDetailsBuild(match: string, history: History): void;
+  postBuildInQueue(obj: addQueue, history: History): void;
+  buildInfo: getBuildInfoDetails;
+  repoName: string;
+  isLoading: boolean;
+  logs: string;
+}
 
-function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo, repoName, isLoading, logs }) {
+function Details({ match, history, getDetailsBuild, postBuildInQueue, buildInfo, repoName, isLoading, logs }: DetailsProps) {
   useEffect(() => {
     getDetailsBuild(match.params.id, history);
   }, [getDetailsBuild, match.params.id, history]);

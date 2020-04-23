@@ -1,10 +1,23 @@
 import { api, getBuilds, Status, responseAddQueue, addQueue } from '../api/api';
 import { Dispatch } from 'react';
 import { History } from 'history';
+
+export interface getBuildInfoDetails {
+  id: string;
+  configurationId: string;
+  buildNumber: number;
+  commitMessage: string;
+  commitHash: string;
+  branchName: string;
+  authorName: string;
+  status: string;
+  start: string;
+  duration: number;
+}
 export interface initianStateDetails {
   isLoading: boolean;
   repoName: string;
-  buildInfo: {};
+  buildInfo: getBuildInfoDetails
   rebuildInfo: {};
   logs: string
 }
@@ -12,7 +25,18 @@ export interface initianStateDetails {
 export const initianState: initianStateDetails = {
   isLoading: false,
   repoName: '',
-  buildInfo: {},
+  buildInfo: {
+    id: 'string',
+    configurationId: 'string',
+    buildNumber: 0,
+    commitMessage: 'string',
+    commitHash: 'string',
+    branchName: 'string',
+    authorName: 'string',
+    status: 'String',
+    start: '',
+    duration: 0
+  },
   rebuildInfo: {},
   logs: ''
 };
