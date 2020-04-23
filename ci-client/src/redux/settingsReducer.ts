@@ -2,7 +2,7 @@ import { api, getConfig, Config } from '../api/api';
 import { History } from 'history';
 import { Dispatch } from 'react';
 
-interface initialState {
+export interface initialStateSettings {
   repoName: string;
   buildCommand: string;
   mainBranch: string;
@@ -12,7 +12,7 @@ interface initialState {
   cloningWithError: boolean;
 }
 
-export const initialState: initialState = {
+export const initialState: initialStateSettings = {
   repoName: '',
   buildCommand: 'npm ci && npm run build',
   mainBranch: 'master',

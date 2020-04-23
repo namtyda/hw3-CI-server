@@ -4,14 +4,14 @@ import './Header.scss';
 import { Button } from '../Button/Button';
 
 interface HeaderProps {
-  settings: boolean;
-  button: boolean;
-  history: boolean;
-  title: string;
-  details: boolean;
+  settings?: boolean;
+  button?: boolean;
+  history?: boolean;
+  title?: string;
+  details?: boolean;
   onClick(): void;
   onClick2(): void;
-  redirectHistory(): void;
+  redirectHistory?: () => void;
 }
 export function Header({ settings, button, history, title, details, onClick, onClick2, redirectHistory }: HeaderProps) {
   const headerClass = classNames({

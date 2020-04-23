@@ -5,7 +5,7 @@ import './Card.scss';
 import classNames from 'classnames';
 
 interface CardProps {
-  details: boolean;
+  details?: boolean;
   id: string;
   buildNumber: number;
   commitMessage: string;
@@ -13,9 +13,9 @@ interface CardProps {
   branchName: string;
   authorName: string;
   status: string;
-  start: number;
+  start: string;
   duration: number;
-  onClick(): void;
+  onClick: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 export function Card({ details, id, buildNumber, commitMessage, commitHash = '', branchName, authorName, status, start, duration, onClick }: CardProps) {
 

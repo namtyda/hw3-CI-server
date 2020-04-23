@@ -2,14 +2,14 @@ import { api, getBuilds, Status, addQueue } from '../api/api';
 import { Dispatch } from 'react';
 import { History } from 'history';
 
-interface initialState {
+export interface initialStateHistory {
   isLoading: boolean;
   buildList: [];
   repoName: string;
   runNewBuild: boolean;
   errorPostReq: boolean;
 }
-export const initialState: initialState = {
+export const initialState: initialStateHistory = {
   isLoading: false,
   buildList: [],
   repoName: '',
@@ -75,7 +75,7 @@ interface errorOnRequestNewBuild {
   payload: boolean;
 }
 
-type HistoryActionTypes =
+export type HistoryActionTypes =
   actionGetBuilds |
   loading |
   getRepoName |

@@ -1,7 +1,7 @@
 import { api, getBuilds, Status, responseAddQueue, addQueue } from '../api/api';
 import { Dispatch } from 'react';
 import { History } from 'history';
-interface initianState {
+export interface initianStateDetails {
   isLoading: boolean;
   repoName: string;
   buildInfo: {};
@@ -9,7 +9,7 @@ interface initianState {
   logs: string
 }
 
-export const initianState: initianState = {
+export const initianState: initianStateDetails = {
   isLoading: false,
   repoName: '',
   buildInfo: {},

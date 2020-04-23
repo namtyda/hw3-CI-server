@@ -7,20 +7,44 @@ import { PopUp } from '../PopUp/PopUp';
 import { Loader } from '../Loader/Loader';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { mapStateToProps, mapDispatchToProps } from './selectors';
+import { mapStateToProps, mapDispatchToProps, postNewBuild } from './selectors';
+import { getBuilds, Status } from '../../api/api';
+import { History } from 'history';
 
-function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, repoName, history, runNewBuild, errorPostReq, getConfigThunk }) {
-  const [toggle, setToggle] = useState(false);
-  const [scroll, setScroll] = useState({
+interface HistoryProps {
+  getBuildListThunk(limit: number): void;
+  postNewBuildQueue(obj: postNewBuild, history: History): void;
+  getConfigThunk(history: History): void;
+  isLoading: boolean;
+  buildList: getBuilds<Status>[];
+  repoName: string;
+  history: History;
+  runNewBuild: boolean;
+  errorPostReq: boolean;
+}
+function HistoryComp({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, repoName, history, runNewBuild, errorPostReq, getConfigThunk }: HistoryProps) {
+  const [toggle, setToggle] = useState<boolean>(false);
+
+  interface scroll {
+    x: number;
+    y: number;
+  }
+  const [scroll, setScroll] = useState<scroll>({
     x: 0,
     y: 200
   });
 
-  const [showLimit, setShowLitim] = useState({
+  interface showLimit {
+    limit: number
+  }
+  const [showLimit, setShowLitim] = useState<showLimit>({
     limit: 10
   });
 
-  const [formValue, setFormValue] = useState({
+  interface setFormValues {
+    [name: string]: string;
+  }
+  const [formValue, setFormValue] = useState<setFormValues>({
     hash: ''
   });
 
@@ -36,12 +60,12 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
     getBuildListThunk(showLimit.limit);
   }, [getBuildListThunk, showLimit.limit]);
 
-  const handleChange = event => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { value, name } = event.currentTarget;
     setFormValue(state => ({ ...state, [name]: value }));
   }
 
-  const handleReset = event => {
+  const handleReset = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     const { name } = event.currentTarget;
     event.preventDefault();
     setFormValue(({ [name]: '' }));
@@ -61,7 +85,7 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
   }
 
 
-  const handleDetails = event => {
+  const handleDetails = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
     const { dataset } = event.currentTarget;
     history.push(`/build/${dataset.hash}`);
   }
@@ -72,7 +96,7 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
     setShowLitim((state) => ({ ...state, limit: state.limit + stepShow }));
   }
 
-  const handleRunBuild = (event) => {
+  const handleRunBuild = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.preventDefault();
     postNewBuildQueue({
       commitHash: formValue.hash,
@@ -104,4 +128,4 @@ function History({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, r
 }
 
 
-export const HistoryConnect = withRouter(connect(mapStateToProps, mapDispatchToProps)(History));
+export const HistoryConnect = withRouter(connect(mapStateToProps, mapDispatchToProps)(HistoryComp));

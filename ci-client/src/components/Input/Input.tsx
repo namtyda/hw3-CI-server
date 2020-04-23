@@ -7,9 +7,9 @@ interface InputProps {
   name: string;
   require?: boolean;
   value: string;
-  onChange(): void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
-  onClick(): void;
+  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   error?: boolean;
   onFocus?: () => void;
 }

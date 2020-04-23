@@ -11,7 +11,7 @@ interface ButtonProps {
   settings?: boolean;
   history?: boolean;
   disabled?: boolean;
-  onClick(): void;
+  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 export function Button({ src, text, textWithIcon, header, accent, settings, history, disabled, onClick }: ButtonProps) {
 

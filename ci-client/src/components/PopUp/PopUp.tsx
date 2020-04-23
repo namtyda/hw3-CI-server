@@ -3,15 +3,15 @@ import './PopUp.scss';
 import { Input } from '../Input/Input';
 import { Button } from '../Button/Button';
 interface PopUpProps {
-  onChange(): void;
-  onClickRunBuild(): void;
+
+  onClickRunBuild: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   closePopUp(): void;
-  onClick(): boolean;
+  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   found?: boolean;
   name: string;
   value: string;
   disabled: boolean;
-
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 export function PopUp({ onChange, name, value, onClick, onClickRunBuild, closePopUp, disabled, found }: PopUpProps) {
   return (
