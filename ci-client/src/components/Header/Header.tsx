@@ -9,7 +9,7 @@ interface HeaderProps {
   history?: boolean;
   title?: string;
   details?: boolean;
-  onClick(): void;
+  onClick?: () => void;
   onClick2?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   redirectHistory?: () => void;
 }

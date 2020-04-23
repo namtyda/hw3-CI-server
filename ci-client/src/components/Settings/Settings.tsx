@@ -9,14 +9,24 @@ import { Button } from '../Button/Button';
 import { postSaveSettings } from '../../redux/settingsReducer';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { rootReducerTypes } from '../../redux/root-reducer';
+import { History } from 'history';
+import { Config } from '../../api/api';
 
-const initialState = {
+const initialState: Config = {
   repoName: '',
   buildCommand: 'npm ci && npm run build',
   mainBranch: 'master',
-  period: '1'
+  period: 1
 }
-function Settings({ history, postSaveSettings, isCloning, cloningWithError }) {
+
+interface SettingsProps {
+  history: History;
+  postSaveSettings(value: Config, history: History): void;
+  isCloning: boolean;
+  cloningWithError: boolean;
+}
+function Settings({ history, postSaveSettings, isCloning, cloningWithError }: SettingsProps) {
   const [formValues, setFormValues] = useState(initialState);
   const [inputError, setInputError] = useState({
     repoName: false,
@@ -25,27 +35,27 @@ function Settings({ history, postSaveSettings, isCloning, cloningWithError }) {
     period: false
   });
 
-  const handleChange = event => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
   }
 
-  const handleResetField = event => {
+  const handleResetField = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.preventDefault();
-    const { name } = event.target;
+    const { name } = event.currentTarget;
     setFormValues((prev) => ({ ...prev, [name]: '' }));
   }
 
-  const handleCancel = event => {
+  const handleCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.preventDefault();
     history.goBack();
   }
 
-  const handleFocus = (event) => {
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>): void => {
     const { name } = event.currentTarget;
     setInputError(state => ({ ...state, [name]: false }));
   }
-  const handleSaveSettings = event => {
+  const handleSaveSettings = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.preventDefault();
     const errors = {
       repoName: false,
@@ -62,7 +72,7 @@ function Settings({ history, postSaveSettings, isCloning, cloningWithError }) {
     if (!(formValues.mainBranch.length > 0)) {
       errors.mainBranch = true;
     }
-    if (!(formValues.period.length > 0)) {
+    if (!(String(formValues.period).length > 0)) {
       errors.period = true;
     }
     if (!(errors.repoName) && !(errors.buildCommand) && !(errors.mainBranch) && !(errors.period)) {
@@ -77,7 +87,7 @@ function Settings({ history, postSaveSettings, isCloning, cloningWithError }) {
   return (
     <>
       <div className='settings'>
-        <Header settings title='School CI server' text='test' />
+        <Header settings title='School CI server' />
         <div className='content'>
           <h2 className="settings__title">Settings</h2>
           <p className="settings__subtitle">Configure repository connection and synchronization settings.</p>
@@ -103,7 +113,7 @@ function Settings({ history, postSaveSettings, isCloning, cloningWithError }) {
   );
 }
 
-const mapStateToProps = ({ settings }) => ({
+const mapStateToProps = ({ settings }: rootReducerTypes) => ({
   isCloning: settings.isCloning,
   cloningWithError: settings.cloningWithError
 });

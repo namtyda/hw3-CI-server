@@ -11,7 +11,7 @@ interface InputProps {
   placeholder?: string;
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   error?: boolean;
-  onFocus?: () => void;
+  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 export function Input({ labelText, name, require, value, onChange, placeholder, onClick, error, onFocus }: InputProps) {
   const paragraph = classNames('settings__paragraph', {
