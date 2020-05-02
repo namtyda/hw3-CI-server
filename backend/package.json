@@ -1,0 +1,42 @@
+{
+  "name": "hw3-CI-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha  -r ts-node/register src/test/*.js",
+    "test:int": "mocha  -r ts-node/register src/testInt/*.js",
+    "start": "TS_NODE_FILES=1 ts-node src/server.ts -r ts-node/register --ignore"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/namtyda/hw3-CI-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/namtyda/hw3-CI-server/issues"
+  },
+  "homepage": "https://github.com/namtyda/hw3-CI-server#readme",
+  "devDependencies": {
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.6",
+    "@types/node": "^13.13.1",
+    "axios": "^0.19.2",
+    "axios-mock-adapter": "^1.18.1",
+    "chai": "^4.2.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mocha": "^6.2.1",
+    "nodemon": "^2.0.2",
+    "sinon": "^7.5.0",
+    "supertest": "^4.0.2",
+    "ts-node": "^8.9.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/express-serve-static-core": "^4.17.5",
+    "cors": "^2.8.5"
+  }
+}

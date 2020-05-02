@@ -6,6 +6,11 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "@types/classnames": "^2.2.10",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.13.2",
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.6",
     "ansi-to-html": "^0.6.14",
     "axios": "^0.19.2",
     "date-fns": "^2.11.1",
@@ -15,7 +20,8 @@
     "react-scripts": "3.4.1",
     "react-text-mask": "^5.4.3",
     "redux": "^4.0.5",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "typescript": "^3.8.3"
   },
   "scripts": {
     "start": "PORT=3001 react-scripts start",
@@ -40,6 +46,10 @@
     ]
   },
   "devDependencies": {
+    "@types/react-redux": "^7.1.7",
+    "@types/react-router": "^5.1.5",
+    "@types/react-router-dom": "^5.1.4",
+    "@types/react-text-mask": "^5.4.6",
     "classnames": "^2.2.6",
     "hermione": "^3.1.0",
     "history": "^4.10.1",
