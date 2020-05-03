@@ -43,6 +43,18 @@ if ("function" === typeof importScripts) {
         ],
       })
     );
+      // fonts cache
+    workbox.routing.registerRoute(
+      new RegExp("https://yastatic.net/islands/(.*)"),
+      workbox.strategies.cacheFirst({
+        cacheName: "yastatic",
+        plugins: [
+          new workbox.expiration.Plugin({
+            maxEntries: 30,
+          }),
+        ],
+      })
+    );
   } else {
     console.error("Workbox could not be loaded. No offline support");
   }
