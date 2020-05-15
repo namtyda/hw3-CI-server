@@ -6,6 +6,12 @@ import axios from '../utils/axios-inst'
 import { getConfig, getBuilds, Status, addQueueBody, saveSettings } from '../routers/router';
 import { Response, Request } from 'express-serve-static-core';
 import { AxiosResponse } from 'axios';
+axios.interceptors.response.use(response => response, (error: any) => {
+  if (error.config && error.response && error.response.status >= 500) {
+    return axios.request(error.config);
+  }
+  return Promise.reject(error);
+});
 interface store {
   first: boolean;
   mainBranch: string;

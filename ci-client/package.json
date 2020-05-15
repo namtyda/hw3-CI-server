@@ -25,10 +25,13 @@
   },
   "scripts": {
     "start": "PORT=3001 react-scripts start",
-    "build": "react-scripts build && rm -rf ../static && mv build ../static",
     "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
-    "hermione": "./node_modules/.bin/hermione gui ./test/hermione/test.hermione.js"
+    "hermione": "./node_modules/.bin/hermione gui ./test/hermione/test.hermione.js",
+    "build-sw": "node src/sw-create.js",
+    "clean-cra-sw": "rm -f build/precache-manifest.*.js && rm -f build/service-worker.js",
+    "build": "react-scripts build && npm run build-sw && npm run clean-cra-sw",
+    "dbg": "serve build -p 3102 --cors"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -57,6 +60,7 @@
     "node-sass": "^4.13.1",
     "react-router-dom": "^5.1.2",
     "redux-mock-store": "^1.5.4",
-    "selenium-standalone": "^6.17.0"
+    "selenium-standalone": "^6.17.0",
+    "serve": "^11.3.0"
   }
 }
