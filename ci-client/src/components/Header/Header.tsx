@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import './Header.scss';
 import { Button } from '../Button/Button';
+import { useTranslation } from 'react-i18next';
 
 interface HeaderProps {
   settings?: boolean;
@@ -14,6 +15,9 @@ interface HeaderProps {
   redirectHistory?: () => void;
 }
 export function Header({ settings, button, history, title, details, onClick, onClick2, redirectHistory }: HeaderProps) {
+  // eslint-disable-next-line 
+  const { t, i18n } = useTranslation();
+  
   const headerClass = classNames({
     'header_settings': settings,
     'header__content': !settings,
@@ -27,7 +31,7 @@ export function Header({ settings, button, history, title, details, onClick, onC
 
   return (
     <header className={headerClass}>
-      <h1 className={headerTitleClass} onClick={redirectHistory}>{title}</h1>
+      <h1 className={headerTitleClass} onClick={redirectHistory}>{t('title')}</h1>
       {history ?
         <div className='header__button-wrapper'>
           {details ? <Button src='/images/rebuild.svg' textWithIcon='Rebuild' header onClick={onClick} /> : <Button onClick={onClick} src='/images/play.svg' textWithIcon='Run build' header />}
