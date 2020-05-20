@@ -1,4 +1,24 @@
 {
   "title": "School CI server",
-  "langVersion": "Русская версия"
+  "langVersion": "Русская версия",
+  "day": "enGB",
+  "hours": "h",
+  "minutes": "min",
+  "showBtn": "Show more",
+  "runBuild": "Run Build",
+  "rebuild": "Rebuild",
+  "support": "Support",
+  "learning": "Learning",
+  "sync": {
+    "p1": "Synchronize every",
+    "p2": "minutes"
+  },
+  "settings": "Settings",
+  "settingTitle": "Configure repository connection and synchronization settings.",
+  "failClone": "fail clone repository",
+  "save": "Save",
+  "cancel": "Cancel",
+  "github": "GitHub repository",
+  "buildCommand": "Build command",
+  "mainBranch": "Main branch"
 }

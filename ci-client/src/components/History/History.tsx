@@ -10,6 +10,7 @@ import { withRouter } from 'react-router-dom';
 import { mapStateToProps, mapDispatchToProps, postNewBuild } from './selectors';
 import { getBuilds, Status } from '../../api/api';
 import { History } from 'history';
+import { useTranslation } from 'react-i18next';
 
 interface HistoryProps {
   getBuildListThunk(limit: number): void;
@@ -24,6 +25,7 @@ interface HistoryProps {
 }
 function HistoryComp({ getBuildListThunk, postNewBuildQueue, isLoading, buildList, repoName, history, runNewBuild, errorPostReq, getConfigThunk }: HistoryProps) {
   const [toggle, setToggle] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   interface scroll {
     x: number;
@@ -117,7 +119,7 @@ function HistoryComp({ getBuildListThunk, postNewBuildQueue, isLoading, buildLis
             <div className='history__list'>
               {mapCardTopData}
             </div>
-            <button className="button history__button" onClick={handleShowMore}>Show more</button>
+            <button className="button history__button" onClick={handleShowMore}>{t('showBtn')}</button>
           </div>
         }
         {toggle ? <PopUp found={errorPostReq} onChange={handleChange} onClick={handleReset} name={'hash'} value={formValue.hash} onClickRunBuild={handleRunBuild} closePopUp={handleCloseRunBuild} disabled={runNewBuild} /> : null}

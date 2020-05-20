@@ -1,8 +1,9 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { ru } from 'date-fns/locale'
+import { ru, enGB } from 'date-fns/locale'
 import './Card.scss';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 interface CardProps {
   details?: boolean;
@@ -18,6 +19,7 @@ interface CardProps {
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 export function Card({ details, id, buildNumber, commitMessage, commitHash = '', branchName, authorName, status, start, duration, onClick }: CardProps) {
+  const { t } = useTranslation();
 
   const informClass = classNames('card__information', {
     'details__card': details
@@ -77,11 +79,11 @@ export function Card({ details, id, buildNumber, commitMessage, commitHash = '',
           <div className={cardDateClass}>
             <div className={cardDayContClass}>
               <img className="card__icon-atribute" src="/images/calendar.svg" alt="calendar icon" />
-              <p className={cardDayClass}>{start && format(new Date(start), 'd MMM HH:mm', { locale: ru }).replace('.', ',')}</p>
+              <p className={cardDayClass}>{start && format(new Date(start), 'd MMM HH:mm', { locale: t('day') === 'ru' ? ru : enGB }).replace('.', ',')}</p>
             </div>
             <div className="card__time-container">
               <img className="card__icon-atribute" src="/images/time.svg" alt="time icon" />
-              <p className="card__time">{duration && `${duration / 60 ^ 0} ч ${duration % 60} мин`}</p>
+              <p className="card__time">{duration && `${duration / 60 ^ 0} ${t('hours')} ${duration % 60} ${t('minutes')}`}</p>
             </div>
           </div>
         </div>

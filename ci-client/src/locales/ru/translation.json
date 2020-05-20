@@ -1,4 +1,24 @@
 {
   "title": "Школьный CI сервер",
-  "langVersion": "English version"
+  "langVersion": "English version",
+  "day": "ru",
+  "hours": "ч",
+  "minutes": "мин",
+  "showBtn": "Показать больше",
+  "runBuild": "Запустить сборку",
+  "rebuild": "Перезапустить",
+  "support": "Служба поддержки",
+  "learning": "Обучение",
+  "sync": {
+    "p1": "Синхронизировать каждые",
+    "p2": "минут"
+  },
+  "settings": "Настройки",
+  "settingTitle": "Настройте соединение с репозиторием и настройки синхронизации.",
+  "failClone": "сбой клонирования репозитория",
+  "save": "Сохранить",
+  "cancel": "Отмена",
+  "github": "GitHub репозиторий",
+  "buildCommand": "Команда сборки",
+  "mainBranch": "Основная ветка"
 }

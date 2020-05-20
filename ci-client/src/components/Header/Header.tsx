@@ -34,7 +34,7 @@ export function Header({ settings, button, history, title, details, onClick, onC
       <h1 className={headerTitleClass} onClick={redirectHistory}>{t('title')}</h1>
       {history ?
         <div className='header__button-wrapper'>
-          {details ? <Button src='/images/rebuild.svg' textWithIcon='Rebuild' header onClick={onClick} /> : <Button onClick={onClick} src='/images/play.svg' textWithIcon='Run build' header />}
+          {details ? <Button src='/images/rebuild.svg' textWithIcon={t('rebuild')} header onClick={onClick} /> : <Button onClick={onClick} src='/images/play.svg' textWithIcon={t('runBuild')} header />}
           <Button onClick={onClick2} src='/images/gear.svg' header history />
         </div>
         : button && <Button onClick={onClick} src='/images/gear.svg' textWithIcon='Settings' header />}

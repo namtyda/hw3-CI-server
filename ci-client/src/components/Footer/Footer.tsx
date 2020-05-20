@@ -14,8 +14,8 @@ export function Footer() {
     <footer className='footer'>
       <div className='content footer__content'>
         <ul className="footer__link-list">
-          <li className="footer__link">Support</li>
-          <li className="footer__link">Learning</li>
+          <li className="footer__link">{t('support')}</li>
+          <li className="footer__link">{t('learning')}</li>
           {currentLang === 'ru' ?
             <li onClick={() => changeLang('en')} className="footer__link">{t('langVersion')}</li> :
             <li onClick={() => changeLang('ru')} className="footer__link">{t('langVersion')}</li>
