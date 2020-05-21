@@ -17,7 +17,7 @@ interface HeaderProps {
 export function Header({ settings, button, history, title, details, onClick, onClick2, redirectHistory }: HeaderProps) {
   // eslint-disable-next-line 
   const { t, i18n } = useTranslation();
-  
+
   const headerClass = classNames({
     'header_settings': settings,
     'header__content': !settings,
@@ -37,7 +37,7 @@ export function Header({ settings, button, history, title, details, onClick, onC
           {details ? <Button src='/images/rebuild.svg' textWithIcon={t('rebuild')} header onClick={onClick} /> : <Button onClick={onClick} src='/images/play.svg' textWithIcon={t('runBuild')} header />}
           <Button onClick={onClick2} src='/images/gear.svg' header history />
         </div>
-        : button && <Button onClick={onClick} src='/images/gear.svg' textWithIcon='Settings' header />}
+        : button && <Button onClick={onClick} src='/images/gear.svg' textWithIcon={t('settings')} header />}
     </header>
 
   );

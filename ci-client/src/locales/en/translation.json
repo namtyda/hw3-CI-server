@@ -20,5 +20,10 @@
   "cancel": "Cancel",
   "github": "GitHub repository",
   "buildCommand": "Build command",
-  "mainBranch": "Main branch"
+  "mainBranch": "Main branch",
+  "openSettings": "Open settings",
+  "startTitle": "Configure repository connection and synchronization settings.",
+  "newBuild": "New build",
+  "descPopUp": "Enter the commit hash which you want to build.",
+  "commitNotFound": "Commit not found"
 }

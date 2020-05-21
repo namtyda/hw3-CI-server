@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { mapStateToProps, mapDispatchToProps } from './selectors';
 import { History } from 'history';
+import { useTranslation } from 'react-i18next';
 interface StartProps {
   getConfigThunk(history: History): void;
   history: History;
@@ -16,6 +17,7 @@ interface StartProps {
 
 function Start({ getConfigThunk, history, isLoad }: StartProps) {
   useEffect(() => getConfigThunk(history), [getConfigThunk, history]);
+  const { t } = useTranslation();
 
   const handleRedirectSettings = () => {
     history.push('/settings');
@@ -28,10 +30,9 @@ function Start({ getConfigThunk, history, isLoad }: StartProps) {
           <div className='settings-info content'>
             <img className="settings-info__img" src="images/settingslogo.svg" alt="key and screw" />
             <p className="settings-info__text">
-              Configure repository connection
-              and synchronization settings
+              {t('startTitle')}
             </p>
-            <Button text='Open settings' accent onClick={handleRedirectSettings} />
+            <Button text={t('openSettings')} accent onClick={handleRedirectSettings} />
           </div>
         }
       </div>
