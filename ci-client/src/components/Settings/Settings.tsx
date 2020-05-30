@@ -12,6 +12,7 @@ import { withRouter } from 'react-router-dom';
 import { rootReducerTypes } from '../../redux/root-reducer';
 import { History } from 'history';
 import { Config } from '../../api/api';
+import { useTranslation } from 'react-i18next';
 
 const initialState: Config = {
   repoName: '',
@@ -34,7 +35,7 @@ function Settings({ history, postSaveSettings, isCloning, cloningWithError }: Se
     mainBranch: false,
     period: false
   });
-
+  const { t } = useTranslation();
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
@@ -89,21 +90,21 @@ function Settings({ history, postSaveSettings, isCloning, cloningWithError }: Se
       <div className='settings'>
         <Header settings title='School CI server' />
         <div className='content'>
-          <h2 className="settings__title">Settings</h2>
-          <p className="settings__subtitle">Configure repository connection and synchronization settings.</p>
+          <h2 className="settings__title">{t('settings')}</h2>
+          <p className="settings__subtitle">{t('settingTitle')}</p>
           <form className='settings__form'>
-            <Input labelText='GitHub repository' name='repoName' placeholder='user-name/repo-name' require onChange={handleChange} value={formValues.repoName} onClick={handleResetField} error={inputError.repoName} onFocus={handleFocus} />
-            <Input labelText='Build command' name='buildCommand' placeholder='build command' require onChange={handleChange} value={formValues.buildCommand} onClick={handleResetField} error={inputError.buildCommand} onFocus={handleFocus} />
-            <Input labelText='Main branch' name='mainBranch' placeholder='branch' onChange={handleChange} value={formValues.mainBranch} onClick={handleResetField} error={inputError.mainBranch} onFocus={handleFocus} />
-            {cloningWithError && <span className='settings__fail'>fail clone repository</span>}
+            <Input labelText={t('github')} name='repoName' placeholder='user-name/repo-name' require onChange={handleChange} value={formValues.repoName} onClick={handleResetField} error={inputError.repoName} onFocus={handleFocus} />
+            <Input labelText={t('buildCommand')} name='buildCommand' placeholder='build command' require onChange={handleChange} value={formValues.buildCommand} onClick={handleResetField} error={inputError.buildCommand} onFocus={handleFocus} />
+            <Input labelText={t('mainBranch')} name='mainBranch' placeholder='branch' onChange={handleChange} value={formValues.mainBranch} onClick={handleResetField} error={inputError.mainBranch} onFocus={handleFocus} />
+            {cloningWithError && <span className='settings__fail'>{t('failClone')}</span>}
             <div className="settings__time-wrapper">
-              <p className="settings__paragraph">Synchronize every</p>
+              <p className="settings__paragraph">{t('sync.p1')}</p>
               <MaskedInput className={classMakeInput} name='period' onChange={handleChange} value={formValues.period} mask={[/\d/, /\d/]} guide={false} onFocus={handleFocus} />
-              <p className="settings__paragraph">minutes</p>
+              <p className="settings__paragraph">{t('sync.p2')}</p>
             </div>
             <div className="settings__button-wrapper">
-              <Button accent text='Save' settings onClick={handleSaveSettings} disabled={isCloning} />
-              <Button text='Cancel' disabled={isCloning} onClick={handleCancel} />
+              <Button accent text={t('save')} settings onClick={handleSaveSettings} disabled={isCloning} />
+              <Button text={t('cancel')} disabled={isCloning} onClick={handleCancel} />
             </div>
           </form>
         </div>
